@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Battle Tracker</title>
+    <script src="/js/battleTracker.js" defer></script> <!-- External JavaScript -->
+</head>
+<body>
+
+<h2>Battle Tracker</h2>
+
+<!-- Form to add new combatants -->
+<form th:action="@{/battle_tracker/add}" method="post">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="hp">HP:</label>
+    <input type="number" id="hp" name="hp" required>
+
+    <label for="ac">AC:</label>
+    <input type="number" id="ac" name="ac" required>
+
+    <label for="initiative">Initiative:</label>
+    <input type="number" id="initiative" name="initiative" required>
+
+    <button type="submit">Add Combatant</button>
+</form>
+
+<!-- List of combatants -->
+<h3>Combatants:</h3>
+<ul id="combatantsList">
+    <li th:each="combatant, index : ${combatants}"
+        th:text="${combatant.name} + ' - HP: ' + ${combatant.hp} + ' - AC: ' + ${combatant.ac} + ' - Initiative: ' + ${combatant.initiative}"
+        th:style="${index.index == currentTurnIndex} ? 'font-weight: bold; color: red;' : ''">
+    </li>
+</ul>
+
+<!-- Button to proceed to next turn -->
+<button id="nextTurnButton">Next Turn</button>
+
+</body>
+</html>
