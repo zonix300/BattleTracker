@@ -8,30 +8,16 @@
 
 <h2>Battle Tracker</h2>
 
-<!-- Form to add new combatants -->
-<form th:action="@{/battle_tracker/add}" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
-
-    <label for="hp">HP:</label>
-    <input type="number" id="hp" name="hp" required>
-
-    <label for="ac">AC:</label>
-    <input type="number" id="ac" name="ac" required>
-
-    <label for="initiative">Initiative:</label>
-    <input type="number" id="initiative" name="initiative" required>
-
-    <button type="submit">Add Combatant</button>
-</form>
-
+<h3>Available Creatures</h3>
+<ul id="availableCreatures">
+    <li th:each="creature : ${availableCreatures}">
+        <span th:text="${creature.name}"></span> - HP: <span th:text="${creature.hp}"></span>
+        <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
+    </li>
+</ul>
 <!-- List of combatants -->
 <h3>Combatants:</h3>
-<ul id="combatantsList">
-    <li th:each="combatant, index : ${combatants}"
-        th:text="${combatant.name} + ' - HP: ' + ${combatant.hp} + ' - AC: ' + ${combatant.ac} + ' - Initiative: ' + ${combatant.initiative}"
-        th:style="${index.index == currentTurnIndex} ? 'font-weight: bold; color: red;' : ''">
-    </li>
+<ul id="activeCombatants" th:data-combatants="${activeCombatants}">
 </ul>
 
 <!-- Button to proceed to next turn -->

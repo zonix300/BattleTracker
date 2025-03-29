@@ -7,9 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -17,24 +15,28 @@ import java.util.Map;
 public class BattleTrackerController {
     private final CombatantService combatantService;
 
+
     public BattleTrackerController(CombatantService combatantService) {
         this.combatantService = combatantService;
     }
 
     @GetMapping
     public String showBattleTracker(Model model) {
-        model.addAttribute("combatants", combatantService.getAllCombatants());
+        model.addAttribute("availableCreatures", combatantService.getAvailableCreatures());
+        model.addAttribute("activeCombatants", combatantService.getActiveCombatants());
         return "battle_tracker";
     }
 
     @PostMapping("/add")
-    public String addCombatants(@RequestParam String name,
-                                @RequestParam Integer hp,
-                                @RequestParam Integer ac,
-                                @RequestParam Integer initiative) {
-        combatantService.addCombatant(new Combatant(name, hp, ac, initiative));
-        return "redirect:/battle_tracker";
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addToCombat(@RequestParam Long combatantId) {
+        // Add selected combatant to the combat
+        Combatant newCombatant = combatantService.addToCombat(combatantId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("newCombatant", newCombatant); // Return the updated list of active combatants
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/delete")
     public String deleteCombatants(@RequestParam Long id) {
@@ -46,15 +48,19 @@ public class BattleTrackerController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> nextTurn() {
         combatantService.nextTurn();
-
-        List<Combatant> combatants = combatantService.getAllCombatants();
-        combatants.sort(Comparator.comparingInt(Combatant::getInitiative).reversed());
-
-        int currentTurnIndex = combatantService.getCurrentTurnIndex();
         Map<String, Object> response = new HashMap<>();
-
-        response.put("combatants", combatants);
-        response.put("currentTurnIndex", currentTurnIndex);
+        response.put("currentTurnIndex", combatantService.getCurrentTurnIndex());
+        response.put("activeCombatants", combatantService.getActiveCombatants());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/activeCombatants")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getActiveCombatants() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("activeCombatants", combatantService.getActiveCombatants());
+        response.put("currentTurnIndex", combatantService.getCurrentTurnIndex());
+        return ResponseEntity.ok(response);
+    }
+
 }

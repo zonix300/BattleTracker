@@ -15,6 +15,8 @@ public class Combatant {
     Integer initiative;
     Integer hp;
     Integer ac;
+    Integer cr;
+
 
     public Combatant() {
 
@@ -65,5 +67,13 @@ public class Combatant {
 
     public void setAc(Integer ac) {
         this.ac = ac;
+    }
+
+    public Integer getCr() {
+        return cr;
+    }
+
+    public void setCr(Integer cr) {
+        this.cr = cr;
     }
 }
