@@ -16,10 +16,15 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.USER);
-        userRepository.save(user);
+    public boolean save(User user) {
+        if(userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(Role.USER);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+
     }
 
 

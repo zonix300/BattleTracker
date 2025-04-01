@@ -1,64 +1,88 @@
 package com.zonix.dndapp.service;
 
+import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.entity.Combatant;
-import com.zonix.dndapp.entity.TurnTracker;
 import com.zonix.dndapp.repository.CombatantRepository;
-import com.zonix.dndapp.repository.TurnTrackerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
+@Transactional
 public class CombatantService {
     private final CombatantRepository combatantRepository;
-    private final TurnTrackerRepository turnTrackerRepository;
-    private int currentTurnIndex = 0;
+    private final List<Combatant> activeCombatants = new ArrayList<>();
+    private Combatant roundStartCombatant = null;
 
-    public CombatantService(CombatantRepository combatantRepository, TurnTrackerRepository turnTrackerRepository) {
+    private int currentRound = 1;
+
+
+    public CombatantService(CombatantRepository combatantRepository) {
         this.combatantRepository = combatantRepository;
-        this.turnTrackerRepository = turnTrackerRepository;
     }
-    public Combatant addCombatant(Combatant combatant) {
-        return combatantRepository.save(combatant);
-    }
-    public List<Combatant> getAvailableCreatures() {
+    public List<TemplateCreature> getAvailableCreatures() {
         return combatantRepository.findAll();
     }
 
-    public List<TurnTracker> getActiveCombatants() {
-        return turnTrackerRepository.findAllByOrderByTurnOrderAsc();
+    public List<Combatant> getActiveCombatants() {
+        return Collections.unmodifiableList(activeCombatants);
     }
 
-    public Combatant addToCombat(Long combatantId) {
-        Combatant combatant = combatantRepository.findById(combatantId)
+    public TemplateCreature addToCombat(Long combatantId, int amount) {
+        TemplateCreature templateCreature = combatantRepository.findById(combatantId)
                 .orElseThrow(() -> new RuntimeException("Combatant not found"));
 
-        TurnTracker turnTracker = new TurnTracker();
-        turnTracker.setCombatant(combatant);
-        turnTracker.setTurnOrder((int) turnTrackerRepository.count());
-        turnTrackerRepository.save(turnTracker);
-        return combatant;
-    }
-    public void deleteCombatant(Long id) {
-        combatantRepository.deleteById(id);
+        for (int i = 0; i < amount; i++) {
+            Combatant combatant = new Combatant(templateCreature, activeCombatants.size());
+            activeCombatants.add(combatant);
+        }
+
+
+        return templateCreature;
     }
 
     public void nextTurn() {
-        List<TurnTracker> turnOrder = turnTrackerRepository.findAllByOrderByTurnOrderAsc();
-        if (turnOrder.isEmpty()) return;
+        if (activeCombatants.isEmpty()) return;
 
-        TurnTracker first = turnOrder.remove(0);
-        turnOrder.add(first);
+        if (roundStartCombatant == null) {
+            roundStartCombatant = activeCombatants.get(0);
+        }
 
-        int order = 0;
-        for(TurnTracker turn : turnOrder) {
-            turn.setTurnOrder(order++);
-            turnTrackerRepository.save(turn);
+        Combatant first = activeCombatants.remove(0);
+        activeCombatants.add(first);
+
+        boolean isNewRound = activeCombatants.get(0).equals(roundStartCombatant);
+        if (isNewRound) {
+            currentRound++;
+            roundStartCombatant = activeCombatants.get(0);
+        }
+        for(int i = 0; i < activeCombatants.size(); i++) {
+            activeCombatants.get(i).setTurnOrder(i);
         }
     }
 
-    public int getCurrentTurnIndex() {
-        return currentTurnIndex;
+    public void dealDamage(int index, int amount) {
+        Combatant combatant = activeCombatants.get(index);
+        int newCurrentHp = Math.max(0, combatant.getCurrentHp() - amount);
+        combatant.setCurrentHp(newCurrentHp);
+
+    }
+    public void heal(int index, int amount) {
+        Combatant combatant = activeCombatants.get(index);
+        int newCurrentHp = Math.min(1000, combatant.getCurrentHp() + amount);
+        combatant.setCurrentHp(newCurrentHp);
+    }
+
+    public void remove(int index) {
+        if (roundStartCombatant == activeCombatants.get(index)) {
+            roundStartCombatant = null;
+        }
+        activeCombatants.remove(index);
+
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
     }
 }

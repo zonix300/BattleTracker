@@ -24,8 +24,10 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user) {
-        userService.save(user);
-        return "redirect:/login";
+        if(userService.save(user)) {
+            return "redirect:/user/login";
+        }
+        return "redirect:/user/register";
     }
 
     @GetMapping("/login")

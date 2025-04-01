@@ -1,16 +1,15 @@
 package com.zonix.dndapp.repository;
 
-import com.zonix.dndapp.entity.Combatant;
+import com.zonix.dndapp.entity.TemplateCreature;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CombatantRepository extends JpaRepository<Combatant, Long> {
+public interface CombatantRepository extends JpaRepository<TemplateCreature, Long> {
 
-    Optional<Combatant> findById(Long id);
-    Optional<Combatant> findByName(String name);
-    List<Combatant> findByAc(Integer ac);
-    List<Combatant> findByHp(Integer hp);
+    Optional<TemplateCreature> findById(Long id);
+    Optional<TemplateCreature> findByName(String name);
+    List<TemplateCreature> findByAc(Integer ac);
+    List<TemplateCreature> findByHp(Integer hp);
 }

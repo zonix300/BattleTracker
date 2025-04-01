@@ -5,20 +5,25 @@
     <script src="/js/battleTracker.js" defer></script> <!-- External JavaScript -->
 </head>
 <body>
-
+<h2>Round counter: </h2>
+<div id="roundCounter">...</div>
 <h2>Battle Tracker</h2>
 
 <h3>Available Creatures</h3>
 <ul id="availableCreatures">
     <li th:each="creature : ${availableCreatures}">
         <span th:text="${creature.name}"></span> - HP: <span th:text="${creature.hp}"></span>
+        <input type="number" class="creaturesAmountInput" value="1" min="1">
         <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
     </li>
 </ul>
 <!-- List of combatants -->
 <h3>Combatants:</h3>
-<ul id="activeCombatants" th:data-combatants="${activeCombatants}">
+<ul id="activeCombatants">
+
 </ul>
+
+
 
 <!-- Button to proceed to next turn -->
 <button id="nextTurnButton">Next Turn</button>

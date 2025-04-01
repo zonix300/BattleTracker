@@ -1,6 +1,6 @@
 package com.zonix.dndapp.controller;
 
-import com.zonix.dndapp.entity.Combatant;
+import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.service.CombatantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,12 +29,14 @@ public class BattleTrackerController {
 
     @PostMapping("/add")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> addToCombat(@RequestParam Long combatantId) {
-        // Add selected combatant to the combat
-        Combatant newCombatant = combatantService.addToCombat(combatantId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("newCombatant", newCombatant); // Return the updated list of active combatants
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Object>> addToCombat(@RequestParam Long combatantId, @RequestParam int amount) {
+       TemplateCreature newTemplateCreature = combatantService.addToCombat(combatantId, amount);
+
+       Map<String, Object> response = new HashMap<>();
+       response.put("newCombatant", newTemplateCreature);
+       response.put("activeCombatants", combatantService.getActiveCombatants());
+
+       return ResponseEntity.ok(response);
     }
 
 
@@ -49,7 +51,7 @@ public class BattleTrackerController {
     public ResponseEntity<Map<String, Object>> nextTurn() {
         combatantService.nextTurn();
         Map<String, Object> response = new HashMap<>();
-        response.put("currentTurnIndex", combatantService.getCurrentTurnIndex());
+        response.put("currentRound", combatantService.getCurrentRound());
         response.put("activeCombatants", combatantService.getActiveCombatants());
         return ResponseEntity.ok(response);
     }
@@ -59,8 +61,33 @@ public class BattleTrackerController {
     public ResponseEntity<Map<String, Object>> getActiveCombatants() {
         Map<String, Object> response = new HashMap<>();
         response.put("activeCombatants", combatantService.getActiveCombatants());
-        response.put("currentTurnIndex", combatantService.getCurrentTurnIndex());
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/heal")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> heal(@RequestParam int index, @RequestParam int amount) {
+        combatantService.heal(index, amount);
+        Map<String, Object> response = new HashMap<>();
+        response.put("activeCombatants", combatantService.getActiveCombatants());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/damage")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> dealDamage(@RequestParam int index, @RequestParam int amount) {
+        combatantService.dealDamage(index, amount);
+        Map<String, Object> response = new HashMap<>();
+        response.put("activeCombatants", combatantService.getActiveCombatants());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/remove")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> remove(@RequestParam int index) {
+        combatantService.remove(index);
+        Map<String, Object> response = new HashMap<>();
+        response.put("activeCombatants", combatantService.getActiveCombatants());
+        return ResponseEntity.ok(response);
+    }
 }
