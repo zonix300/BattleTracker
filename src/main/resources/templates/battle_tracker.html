@@ -12,7 +12,7 @@
 <h3>Available Creatures</h3>
 <ul id="availableCreatures">
     <li th:each="creature : ${availableCreatures}">
-        <span th:text="${creature.name}"></span> - HP: <span th:text="${creature.hp}"></span>
+        <span th:text="${creature.name}"></span> - HP: <span th:text="${creature.hitPoints}"></span>
         <input type="number" class="creaturesAmountInput" value="1" min="1">
         <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
     </li>

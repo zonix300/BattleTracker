@@ -9,7 +9,4 @@ import java.util.Optional;
 public interface CombatantRepository extends JpaRepository<TemplateCreature, Long> {
 
     Optional<TemplateCreature> findById(Long id);
-    Optional<TemplateCreature> findByName(String name);
-    List<TemplateCreature> findByAc(Integer ac);
-    List<TemplateCreature> findByHp(Integer hp);
 }
