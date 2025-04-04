@@ -1,7 +1,8 @@
 package com.zonix.dndapp.controller;
 
-import com.zonix.dndapp.entity.TemplateCreature;
+import com.zonix.dndapp.service.CombatGroupService;
 import com.zonix.dndapp.service.CombatantService;
+import com.zonix.dndapp.service.TurnQueueService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,45 +15,55 @@ import java.util.Map;
 @RequestMapping("battle_tracker")
 public class BattleTrackerController {
     private final CombatantService combatantService;
+    private final CombatGroupService combatGroupService;
+
+    private final TurnQueueService turnQueueService;
 
 
-    public BattleTrackerController(CombatantService combatantService) {
+    public BattleTrackerController(CombatantService combatantService, CombatGroupService combatGroupService, TurnQueueService turnQueueService) {
         this.combatantService = combatantService;
+        this.combatGroupService = combatGroupService;
+        this.turnQueueService = turnQueueService;
     }
 
     @GetMapping
     public String showBattleTracker(Model model) {
         model.addAttribute("availableCreatures", combatantService.getAvailableCreatures());
-        model.addAttribute("activeCombatants", combatantService.getActiveCombatants());
+        model.addAttribute("turnQueueItems", turnQueueService.getAllItems());
         return "battle_tracker";
     }
 
     @PostMapping("/add")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> addToCombat(@RequestParam Long combatantId, @RequestParam int amount) {
-       TemplateCreature newTemplateCreature = combatantService.addToCombat(combatantId, amount);
+    public ResponseEntity<Map<String, Object>> addToCombat(@RequestParam Long templateId, @RequestParam(defaultValue = "1") int amount) {
 
-       Map<String, Object> response = new HashMap<>();
-       response.put("newCombatant", newTemplateCreature);
-       response.put("activeCombatants", combatantService.getActiveCombatants());
+        if (amount < 1) {
+            throw new IllegalStateException("Amount must be positive");
+        }
+        Map<String, Object> response = new HashMap<>();
 
-       return ResponseEntity.ok(response);
+        turnQueueService.addItems(templateId, amount);
+
+        response.put("turnQueueItems", turnQueueService.getAllItems());
+        return ResponseEntity.ok(response);
     }
 
-
-    @PostMapping("/delete")
-    public String deleteCombatants(@RequestParam Long id) {
-        combatantService.deleteCombatant(id);
-        return "redirect:/battle_tracker";
+    @PostMapping("/remove")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> remove(@RequestParam int itemId) {
+        turnQueueService.remove(itemId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("turnQueueItems", turnQueueService.getAllItems());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/nextTurn")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> nextTurn() {
-        combatantService.nextTurn();
+        turnQueueService.nextTurn();
         Map<String, Object> response = new HashMap<>();
-        response.put("currentRound", combatantService.getCurrentRound());
-        response.put("activeCombatants", combatantService.getActiveCombatants());
+        response.put("turnQueueItems", turnQueueService.getAllItems());
+        response.put("roundCounter", combatantService.getCurrentRound());
         return ResponseEntity.ok(response);
     }
 
@@ -60,34 +71,27 @@ public class BattleTrackerController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getActiveCombatants() {
         Map<String, Object> response = new HashMap<>();
-        response.put("activeCombatants", combatantService.getActiveCombatants());
+        response.put("turnQueueItems", turnQueueService.getAllItems());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/heal")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> heal(@RequestParam int index, @RequestParam int amount) {
-        combatantService.heal(index, amount);
+    public ResponseEntity<Map<String, Object>> applyHeal(@RequestParam int itemId, @RequestParam int amount) {
+        turnQueueService.applyHeal(itemId, amount);
         Map<String, Object> response = new HashMap<>();
-        response.put("activeCombatants", combatantService.getActiveCombatants());
+        response.put("turnQueueItems", turnQueueService.getAllItems());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/damage")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> dealDamage(@RequestParam int index, @RequestParam int amount) {
-        combatantService.dealDamage(index, amount);
+    public ResponseEntity<Map<String, Object>> applyDamage(@RequestParam int itemId, @RequestParam int amount) {
+        turnQueueService.applyDamage(itemId, amount);
         Map<String, Object> response = new HashMap<>();
-        response.put("activeCombatants", combatantService.getActiveCombatants());
+        response.put("turnQueueItems", turnQueueService.getAllItems());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/remove")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> remove(@RequestParam int index) {
-        combatantService.remove(index);
-        Map<String, Object> response = new HashMap<>();
-        response.put("activeCombatants", combatantService.getActiveCombatants());
-        return ResponseEntity.ok(response);
-    }
+
 }

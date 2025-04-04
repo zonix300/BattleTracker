@@ -1,12 +1,16 @@
 package com.zonix.dndapp.service;
 
-import com.zonix.dndapp.entity.TemplateCreature;
+import com.zonix.dndapp.entity.CombatGroup;
 import com.zonix.dndapp.entity.Combatant;
+import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.repository.CombatantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,6 +25,7 @@ public class CombatantService {
     public CombatantService(CombatantRepository combatantRepository) {
         this.combatantRepository = combatantRepository;
     }
+
     public List<TemplateCreature> getAvailableCreatures() {
         return combatantRepository.findAll();
     }
@@ -29,17 +34,24 @@ public class CombatantService {
         return Collections.unmodifiableList(activeCombatants);
     }
 
-    public TemplateCreature addToCombat(Long combatantId, int amount) {
-        TemplateCreature templateCreature = combatantRepository.findById(combatantId)
+    public List<Combatant> getIndependentCombatants() {
+        return activeCombatants.stream()
+                .filter(combatant -> combatant.getGroupId() == null)
+                .collect(Collectors.toList());
+    }
+
+    public Combatant addCombatant(Long templateId) {
+        TemplateCreature templateCreature = combatantRepository.findById(templateId)
                 .orElseThrow(() -> new RuntimeException("Combatant not found"));
 
-        for (int i = 0; i < amount; i++) {
-            Combatant combatant = new Combatant(templateCreature, activeCombatants.size());
-            activeCombatants.add(combatant);
-        }
+        Combatant combatant = new Combatant(templateCreature);
+        activeCombatants.add(combatant);
+        return combatant;
+    }
 
-
-        return templateCreature;
+    public void addCombatant(Combatant combatant) {
+        activeCombatants.add(combatant);
+        System.out.println("Combatant id to add: " + combatant.getId());
     }
 
     public void nextTurn() {
@@ -57,21 +69,17 @@ public class CombatantService {
             currentRound++;
             roundStartCombatant = activeCombatants.get(0);
         }
-        for(int i = 0; i < activeCombatants.size(); i++) {
-            activeCombatants.get(i).setTurnOrder(i);
-        }
     }
 
-    public void dealDamage(int index, int amount) {
-        Combatant combatant = activeCombatants.get(index);
+    public void heal(Combatant combatant, int amount) {
+        int newCurrentHp = Math.min(combatant.getMaxHp(), combatant.getCurrentHp() + amount);
+        combatant.setCurrentHp(newCurrentHp);
+    }
+
+    public void dealDamage(Combatant combatant, int amount) {
         int newCurrentHp = Math.max(0, combatant.getCurrentHp() - amount);
         combatant.setCurrentHp(newCurrentHp);
 
-    }
-    public void heal(int index, int amount) {
-        Combatant combatant = activeCombatants.get(index);
-        int newCurrentHp = Math.min(1000, combatant.getCurrentHp() + amount);
-        combatant.setCurrentHp(newCurrentHp);
     }
 
     public void remove(int index) {

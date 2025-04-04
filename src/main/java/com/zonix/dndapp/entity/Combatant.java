@@ -1,45 +1,55 @@
 package com.zonix.dndapp.entity;
 
-import jakarta.persistence.*;
 
-@Entity
-public class Combatant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+import com.zonix.dndapp.service.IdGeneratorService;
+
+public class Combatant implements TurnQueueItem {
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "combatant_id")
-    private TemplateCreature templateCreature;
-
-
-
+    private String name;
+    private Integer maxHp;
     private Integer currentHp;
-    private Integer turnOrder;
+    private Integer initiative;
+    private Long groupId = null;
+    private final TurnItemType combatantType = TurnItemType.INDIVIDUAL;
 
-    public Combatant() {
-    }
-
-    public Combatant(TemplateCreature templateCreature, Integer turnOrder) {
-        this.templateCreature = templateCreature;
-        this.turnOrder = turnOrder;
+    public Combatant(TemplateCreature templateCreature) {
+        this.id = IdGeneratorService.generateId();
+        this.name = templateCreature.getName();
+        this.maxHp = templateCreature.getHp();
         this.currentHp = templateCreature.getHp();
+        this.initiative = templateCreature.getInitiative();
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Integer getInitiative() {
+        return initiative;
+    }
+
+    @Override
+    public TurnItemType getType() {
+        return combatantType;
+    }
+
+    public void setId(long id) {
         this.id = id;
     }
 
-    public TemplateCreature getCombatant() {
-        return templateCreature;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setCombatant(TemplateCreature templateCreature) {
-        this.templateCreature = templateCreature;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public Integer getCurrentHp() {
@@ -50,11 +60,11 @@ public class Combatant {
         this.currentHp = currentHp;
     }
 
-    public Integer getTurnOrder() {
-        return turnOrder;
+    public Integer getMaxHp() {
+        return maxHp;
     }
 
-    public void setTurnOrder(Integer turnOrder) {
-        this.turnOrder = turnOrder;
+    public void setMaxHp(Integer maxHp) {
+        this.maxHp = maxHp;
     }
 }

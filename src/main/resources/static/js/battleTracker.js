@@ -10,10 +10,8 @@ function loadActiveCombatants() {
     fetch("/battle_tracker/activeCombatants")
         .then(response => response.json())
         .then(data => {
-            if (data.activeCombatants) {
-                localStorage.setItem("activeCombatants", JSON.stringify(data.activeCombatants));
-            }
-            updateCombatantsList();
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
         })
         .catch(error => console.error("Error loading active combatants:", error));
 }
@@ -26,73 +24,112 @@ function setUpEventListener() {
 
 // Function to add a combatant to the active list
 function addToCombat(button) {
-    const combatantId = button.getAttribute("data-id");
+    const templateId = button.getAttribute("data-id");
     const amount = button.closest("li").querySelector(".creaturesAmountInput").value;
 
-    fetch(`/battle_tracker/add?combatantId=${combatantId}&amount=${amount}`, {
+    fetch(`/battle_tracker/add?templateId=${templateId}&amount=${amount}`, {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: {"Content-type": "application/json"},
     })
         .then(response => response.json())
         .then(data => {
-            localStorage.setItem("activeCombatants", JSON.stringify(data.activeCombatants));
-            updateCombatantsList();
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
         })
         .catch(error => console.error("Error:", error));
 }
 
-// Function to update turn highlighting
-function updateCombatantsList() {
+function updateCombatantsList(data) {
     const combatantsList = document.getElementById("activeCombatants");
     combatantsList.innerHTML = "";
 
-    try {
-        const activeCombatantsJSON = localStorage.getItem("activeCombatants");
-        const activeCombatants = activeCombatantsJSON ? JSON.parse(activeCombatantsJSON) : [];
-
-        activeCombatants.forEach((turn, index) => {
-            if (!turn.combatant) return;
-
-            const li = document.createElement("li");
-            li.className = "combatant-item";
-            if (index === 0) {
-                li.classList.add("active-turn");
-            }
-
-            li.innerHTML = `
-                <span class="combatant-name">${turn.combatant.name}</span> 
-                - HP: <span class="hp-value">${turn.currentHp}</span> 
-                - Initiative: ${turn.combatant.initiative}
-                
-                <select class="hp-action">
-                    <option value="damage">Damage</option>
-                    <option value="heal">Heal</option>
-                </select>
-                
-                <input type="number" class="hp-amount" value="0" min="0">
-                
-                <button class="apply-hp-change" data-index="${index}">Apply</button>
-                <button class="remove-combatant" data-index="${index}">Remove</button>
-            `;
-
-            combatantsList.appendChild(li);
-        });
-
-        // Add event listeners for HP changes
-        document.querySelectorAll(".apply-hp-change").forEach(button => {
-            button.addEventListener("click", handleHpChange);
-        });
-
-        // Add event listeners for removing combatants
-        document.querySelectorAll(".remove-combatant").forEach(button => {
-            button.addEventListener("click", handleRemoveCombatant);
-        });
-
-    } catch (error) {
-        console.error("Error updating combatants list:", error);
-        combatantsList.innerHTML = "<li>Error loading combatants</li>";
+    if (!data.turnQueueItems || !Array.isArray(data.turnQueueItems)) {
+        return;
     }
 
+    data.turnQueueItems.forEach((member, index) => {
+        const li = document.createElement("li");
+        li.className = `combatant ${index === 0 ? 'active-turn' : ''}`;
+
+        if (member.type === "INDIVIDUAL") {
+            li.innerHTML = `
+                <div class="combatant-header">
+                    <span class="name">${member.name}</span>
+                    <span class="initiative">Initiative: ${member.initiative}</span>
+                </div>
+                <div class="combatant-stats">
+                    HP: <span class="hp-value">${member.currentHp}</span>/${member.maxHp}
+                    <button class="remove-btn" data-id="${member.id}">Remove</button>
+                </div>
+                <div class="combatant-controls">
+                    <select class="hp-action">
+                        <option value="damage">Damage</option>
+                        <option value="heal">Heal</option>
+                    </select>
+                    <input type="number" class="hp-amount" min="0" value="0">
+                    <button class="apply-hp-btn" data-id="${member.id}">Apply</button>
+                </div>
+            `;
+        }
+        else if (member.type === "GROUP") {
+            li.innerHTML = `
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <span class="name">${member.groupName} (${member.members.length})</span>
+                    <span class="initiative">Initiative: ${member.initiative}</span>
+                    <button class="remove-btn" data-id="${member.groupId}">Remove All</button>
+                </div>
+                <div class="group-controls">
+                    <select class="hp-action">
+                        <option value="damage">Damage All</option>
+                        <option value="heal">Heal All</option>
+                    </select>
+                    <input type="number" class="hp-amount" min="0" value="0">
+                    <button class="apply-hp-btn" data-id="${member.groupId}">Apply</button>
+                </div>
+                <div class="group-members" style="display:none">
+                    ${member.members.map(m => `
+                        <div class="group-member">
+                            <span>${m.name}</span>
+                            <span>HP: ${m.currentHp}/${m.maxHp}</span>
+                            <button class="remove-btn" data-id="${m.id}">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        combatantsList.appendChild(li);
+    });
+
+    // Add event listeners after elements are created
+    setupCombatantEventListeners();
+}
+
+function toggleGroup(headerElement) {
+    const membersSection = headerElement.nextElementSibling.nextElementSibling;
+    membersSection.style.display = membersSection.style.display === 'none' ? 'block' : 'none';
+}
+
+function setupCombatantEventListeners() {
+    // Individual HP controls
+    document.querySelectorAll('.apply-hp-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const combatantId = this.getAttribute('data-id');
+            const action = this.parentElement.querySelector('.hp-action').value;
+            const amount = parseInt(this.parentElement.querySelector('.hp-amount').value);
+
+            if (!isNaN(amount)) {
+                applyHpChange(combatantId, action, amount);
+            }
+        });
+    });
+
+    // Remove buttons
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            removeItem(this.getAttribute('data-id'));
+        });
+    });
 }
 
 function updateRoundStatus() {
@@ -100,9 +137,8 @@ function updateRoundStatus() {
     roundCounterHTML.innerHTML = "";
 
     try {
-        const roundCounterJSON = localStorage.getItem("currentRound");
+        const roundCounterJSON = localStorage.getItem("roundCounter");
         const roundCounter = JSON.parse(roundCounterJSON);
-        console.log(roundCounter);
 
         const div = document.createElement("div");
         div.innerHTML = `
@@ -115,61 +151,41 @@ function updateRoundStatus() {
     }
 }
 
-function handleHpChange() {
-    const index = parseInt(this.getAttribute("data-index"));
-    const listItem = this.closest("li");
-    const action = listItem.querySelector(".hp-action").value;
-    const amount = parseInt(listItem.querySelector(".hp-amount").value, 10);
-
-    if (isNaN(amount)) {
-        alert("Please enter a valid number");
-        return;
-    }
-
-    fetch(`/battle_tracker/${action}?index=${index}&amount=${amount}`, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.activeCombatants) {
-                localStorage.setItem("activeCombatants", JSON.stringify(data.activeCombatants));
-                updateCombatantsList();
-            }
-        })
-        .catch(error => console.error("Error:", error));
-}
-
-function handleRemoveCombatant() {
-    const index = parseInt(this.getAttribute("data-index"));
-
-    fetch(`battle_tracker/remove?index=${index}`, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.activeCombatants) {
-                localStorage.setItem("activeCombatants", JSON.stringify(data.activeCombatants));
-                updateCombatantsList();
-            }
-        })
-        .catch(error => console.error("Error:", error));
-}
-
 function handleNextTurn() {
     fetch("battle_tracker/nextTurn", {
         method: "POST",
+        headers: {"Content-type": "application/json"},
+    })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem("roundCounter", JSON.stringify(data.roundCounter));
+            updateCombatantsList(data);
+            updateRoundStatus();
+        })
+        .catch(error => console.error("Error:", error));
+}
+
+function applyHpChange(itemId, action, amount) {
+    fetch(`battle_tracker/${action}?itemId=${itemId}&amount=${amount}`, {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+    })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
+            updateRoundStatus();
+        })
+}
+
+function removeItem(itemId) {
+    fetch(`battle_tracker/remove?itemId=${itemId}`, {
+        method: "POST",
         headers: { "Content-type": "application/json" },
     })
         .then(response => response.json())
         .then(data => {
-            if (data.activeCombatants && data.currentRound) {
-                localStorage.setItem("activeCombatants", JSON.stringify(data.activeCombatants));
-                localStorage.setItem("currentRound", JSON.stringify(data.currentRound));
-                updateCombatantsList();
-                updateRoundStatus();
-            }
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
         })
-        .catch(error => console.error("Error:", error));
 }

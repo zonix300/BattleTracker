@@ -9,12 +9,12 @@ import jakarta.persistence.Id;
 public class TemplateCreature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
-    Integer initiative;
-    Integer hp;
-    Integer ac;
-    Integer cr;
+    private Long id;
+    private String name;
+    private Integer initiative;
+    private Integer hp;
+    private Integer ac;
+    private Integer cr;
 
 
     public TemplateCreature() {
