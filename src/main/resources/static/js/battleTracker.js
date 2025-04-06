@@ -6,6 +6,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+const combatantEffects = [
+    "BLINDED",
+    "CHARMED",
+    "DEAFENED",
+    "FRIGHTENED",
+    "GRAPPLED",
+    "INCAPACITATED",
+    "INVISIBLE",
+    "PARALYZED",
+    "PETRIFIED",
+    "POISONED",
+    "PRONE",
+    "RESTRAINED",
+    "UNCONSCIOUS"
+];
+
 function loadActiveCombatants() {
     fetch("/battle_tracker/activeCombatants")
         .then(response => response.json())
@@ -53,7 +69,7 @@ function updateCombatantsList(data) {
 
         if (member.type === "INDIVIDUAL") {
             li.innerHTML = `
-                <div class="combatant-header">
+                <div class="combatant-header" onclick="showEffects(this)">
                     <span class="name">${member.name}</span>
                     <span class="initiative">Initiative: ${member.initiative}</span>
                 </div>
@@ -69,9 +85,18 @@ function updateCombatantsList(data) {
                     <input type="number" class="hp-amount" min="0" value="0">
                     <button class="apply-hp-btn" data-id="${member.id}">Apply</button>
                 </div>
+                <div class="combatant-effects" style="display: none">
+                    ${combatantEffects.map(effect => `
+                        <input type="checkbox" 
+                               class="effect-checkbox"
+                               value="${effect}"
+                               data-id="${member.id}"
+                               ${member.statusEffects && member.statusEffects.includes(effect) ? 'checked' : ''}>
+                        <span class="effect-name">${effect[0] + effect.slice(1).toLowerCase()}</span>
+                    `).join('')}
+                </div>
             `;
-        }
-        else if (member.type === "GROUP") {
+        } else if (member.type === "GROUP") {
             li.innerHTML = `
                 <div class="group-header" onclick="toggleGroup(this)">
                     <span class="name">${member.groupName} (${member.members.length})</span>
@@ -105,6 +130,11 @@ function updateCombatantsList(data) {
     setupCombatantEventListeners();
 }
 
+function showEffects(headerElement) {
+    const memberSection = headerElement.nextElementSibling.nextElementSibling.nextElementSibling;
+    memberSection.style.display = memberSection.style.display === 'none' ? 'block' : 'none';
+}
+
 function toggleGroup(headerElement) {
     const membersSection = headerElement.nextElementSibling.nextElementSibling;
     membersSection.style.display = membersSection.style.display === 'none' ? 'block' : 'none';
@@ -113,7 +143,7 @@ function toggleGroup(headerElement) {
 function setupCombatantEventListeners() {
     // Individual HP controls
     document.querySelectorAll('.apply-hp-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const combatantId = this.getAttribute('data-id');
             const action = this.parentElement.querySelector('.hp-action').value;
             const amount = parseInt(this.parentElement.querySelector('.hp-amount').value);
@@ -124,9 +154,23 @@ function setupCombatantEventListeners() {
         });
     });
 
+    document.querySelectorAll('.effect-checkbox').forEach(box => {
+        box.addEventListener('change', function () {
+            const combatantId = this.getAttribute('data-id');
+            const effect = this.getAttribute('value');
+            const isChecked = this.checked;
+
+            if (isChecked) {
+                applyEffect(combatantId, effect);
+            } else {
+                removeEffect(combatantId, effect);
+            }
+        })
+    })
+
     // Remove buttons
     document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             removeItem(this.getAttribute('data-id'));
         });
     });
@@ -181,7 +225,31 @@ function applyHpChange(itemId, action, amount) {
 function removeItem(itemId) {
     fetch(`battle_tracker/remove?itemId=${itemId}`, {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: {"Content-type": "application/json"},
+    })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
+        })
+}
+
+function applyEffect(itemId, effect) {
+    fetch(`battle_tracker/applyEffect?itemId=${itemId}&effect=${effect}`, {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+    })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem("turnQueueItems", data.turnQueueItems);
+            updateCombatantsList(data);
+        })
+}
+
+function removeEffect(itemId, effect) {
+    fetch(`battle_tracker/removeEffect?itemId=${itemId}&effect=${effect}`, {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
     })
         .then(response => response.json())
         .then(data => {

@@ -1,9 +1,6 @@
 package com.zonix.dndapp.service;
 
-import com.zonix.dndapp.entity.CombatGroup;
-import com.zonix.dndapp.entity.Combatant;
-import com.zonix.dndapp.entity.TurnItemType;
-import com.zonix.dndapp.entity.TurnQueueItem;
+import com.zonix.dndapp.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,6 +60,21 @@ public class TurnQueueService {
         }
     }
 
+    public void applyEffect(int itemId, String effect) {
+        TurnQueueItem turnQueueItem = findItemById(itemId);
+        if (turnQueueItem instanceof Combatant combatant) {
+            StatusEffect statusEffect = StatusEffect.valueOf(effect);
+            combatant.getStatusEffects().add(statusEffect);
+        }
+    }
+
+    public void removeEffect(int itemId, String effect) {
+        TurnQueueItem turnQueueItem = findItemById(itemId);
+        if (turnQueueItem instanceof Combatant combatant) {
+            StatusEffect statusEffect = StatusEffect.valueOf(effect);
+            combatant.getStatusEffects().remove(statusEffect);
+        }
+    }
     public void remove(int itemId) {
         TurnQueueItem item = findItemById(itemId);
         if (item == null) return;
@@ -124,4 +136,6 @@ public class TurnQueueService {
                 .findFirst()
                 .orElse(null);
     }
+
+
 }

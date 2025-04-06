@@ -3,7 +3,7 @@ package com.zonix.dndapp.entity;
 
 import com.zonix.dndapp.service.IdGeneratorService;
 
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +14,7 @@ public class Combatant implements TurnQueueItem {
     private Integer currentHp;
     private Integer initiative;
     private Long groupId = null;
+    private Set<StatusEffect> statusEffects = EnumSet.noneOf(StatusEffect.class);
     private final TurnItemType combatantType = TurnItemType.INDIVIDUAL;
 
     public Combatant(TemplateCreature templateCreature) {
@@ -129,5 +130,13 @@ public class Combatant implements TurnQueueItem {
 
     public void setMaxHp(Integer maxHp) {
         this.maxHp = maxHp;
+    }
+
+    public Set<StatusEffect> getStatusEffects() {
+        return statusEffects;
+    }
+
+    public void setStatusEffects(Set<StatusEffect> statusEffects) {
+        this.statusEffects = statusEffects;
     }
 }

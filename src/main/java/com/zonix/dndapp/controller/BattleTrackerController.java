@@ -1,5 +1,6 @@
 package com.zonix.dndapp.controller;
 
+import com.zonix.dndapp.entity.StatusEffect;
 import com.zonix.dndapp.service.CombatGroupService;
 import com.zonix.dndapp.service.CombatantService;
 import com.zonix.dndapp.service.TurnQueueService;
@@ -52,6 +53,24 @@ public class BattleTrackerController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> remove(@RequestParam int itemId) {
         turnQueueService.remove(itemId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("turnQueueItems", turnQueueService.getAllItems());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/applyEffect")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> applyEffect(@RequestParam int itemId, @RequestParam String effect) {
+        turnQueueService.applyEffect(itemId, effect);
+        Map<String, Object> response = new HashMap<>();
+        response.put("turnQueueItems", turnQueueService.getAllItems());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/removeEffect")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> removeEffect(@RequestParam int itemId, @RequestParam String effect) {
+        turnQueueService.removeEffect(itemId, effect);
         Map<String, Object> response = new HashMap<>();
         response.put("turnQueueItems", turnQueueService.getAllItems());
         return ResponseEntity.ok(response);
