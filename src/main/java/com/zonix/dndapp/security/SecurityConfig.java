@@ -15,10 +15,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/h2-console/**", "/user/**", "/js/**", "/battle_tracker/**").permitAll()
                         .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/battle_tracker/**")) // Disable CSRF for H2
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/battle_tracker/**", "/api/**", "/templates/**")) // Disable CSRF for H2
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Allow H2 frames
                 .formLogin(form -> form
                         .loginPage("/user/login")

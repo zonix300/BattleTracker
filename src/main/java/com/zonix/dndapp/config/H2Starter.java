@@ -1,16 +1,15 @@
 package com.zonix.dndapp.config;
 
-import com.zonix.dndapp.entity.TemplateCreature;
-import com.zonix.dndapp.repository.CombatantRepository;
+import com.zonix.dndapp.repository.TemplateCreatureRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class H2Starter implements CommandLineRunner {
-    private final CombatantRepository combatantRepository;
+    private final TemplateCreatureRepository templateCreatureRepository;
 
-    public H2Starter(CombatantRepository combatantRepository) {
-        this.combatantRepository = combatantRepository;
+    public H2Starter(TemplateCreatureRepository templateCreatureRepository) {
+        this.templateCreatureRepository = templateCreatureRepository;
     }
 
 

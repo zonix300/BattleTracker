@@ -1,259 +1,201 @@
-document.addEventListener("DOMContentLoaded", function () {
-
-    loadActiveCombatants();
-
-    setUpEventListener();
-
+document.addEventListener("DOMContentLoaded", async function () {
+    await getItems();
 });
 
-const combatantEffects = [
-    "BLINDED",
-    "CHARMED",
-    "DEAFENED",
-    "FRIGHTENED",
-    "GRAPPLED",
-    "INCAPACITATED",
-    "INVISIBLE",
-    "PARALYZED",
-    "PETRIFIED",
-    "POISONED",
-    "PRONE",
-    "RESTRAINED",
-    "UNCONSCIOUS"
-];
+let currentTurnIndex = 0;
+let selectedCombatant = null;
+const selectedCombatants = new Set();
+const effectManager = new EffectManager();
 
-function loadActiveCombatants() {
-    fetch("/battle_tracker/activeCombatants")
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-        })
-        .catch(error => console.error("Error loading active combatants:", error));
+function selectCombatant(element) {
+    const combatantId = element.dataset.id;
+
+    toggleCombatantSelection(combatantId, !selectedCombatants.has(combatantId));
 }
 
-function setUpEventListener() {
-
-    document.querySelector("#nextTurnButton").addEventListener("click", handleNextTurn);
+function toggleCombatantSelection(id, selected) {
+    if (selected) {
+        selectedCombatants.add(id);
+    } else {
+        selectedCombatants.delete(id);
+    }
+    updateSelectionStyles();
 }
 
+function updateSelectionStyles() {
+    document.querySelectorAll('.table-row').forEach(row => {
+        const id = row.getAttribute('data-id');
+        row.classList.toggle('highlighted', selectedCombatants.has(id));
+    });
+}
+
+async function applyHpToSelected() {
+    const selectedIds = Array.from(selectedCombatants);
+    const type = document.getElementById('hpAction').value;
+    const amount = document.getElementById('hpAmount').valueAsNumber;
+
+    const request = {
+        combatantIds : selectedIds,
+        amount : amount,
+        type : type.toUpperCase()
+    }
+
+    if (selectedCombatants.size === 0) {
+        alert('Please select at least one combatant');
+    }
+
+    const response = await fetch('api/combatants/hp', {
+        method: "PATCH",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify(request)
+    });
+
+    const result = await response.json();
+    const updatedCombatants = Array.isArray(result) ? result : [result];
+    await updateCombatantsUI(updatedCombatants);
+}
+
+async function removeSelected() {
+    const selectedIds = Array.from(selectedCombatants);
+    const request = {
+        itemIds: selectedIds
+    }
+
+    const response = await fetch('api/combatants/remove', {
+        method: "DELETE",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify(request)
+    });
+
+    const result = await response.json();
+    const updatedCombatants = Array.isArray(result) ? result : [result];
+    await removeCombatantsUI(updatedCombatants);
+}
+
+async function updateCombatantsUI(items) {
+    console.log(items);
+
+    const turnQueueItems = items[0]?.turnQueueItems || [];
+    console.log(items);
+    turnQueueItems.forEach(item => {
+        if (item.type === "GROUP") {
+            item.members.forEach(combatant => {
+                const row = document.querySelector(`.group-member-row[data-id="${combatant.id}"]`);
+                if (row) {
+                    const hpElement = row.querySelector('.hp-cell');
+                    if (hpElement) {
+                        hpElement.textContent = `${combatant.currentHp}/${combatant.maxHp}`;
+                        // Visual feedback
+                        hpElement.classList.add('hp-updated');
+                        setTimeout(() => hpElement.classList.remove('hp-updated'), 1000);
+                    }
+                }
+            });
+        }
+
+        if (item.type === "INDIVIDUAL") {
+            const row = document.querySelector(`.table-row[data-id="${combatant.id}"]`);
+            console.log(row);
+            if (row) {
+                const hpElement = row.querySelector('.hp-cell');
+                console.log(hpElement);
+                if (hpElement) {
+                    hpElement.textContent = `${combatant.currentHp}/${combatant.maxHp}`;
+                    // Visual feedback
+                    hpElement.classList.add('hp-updated');
+                    setTimeout(() => hpElement.classList.remove('hp-updated'), 1000);
+                }
+            }
+        }
+    });
+
+
+}
+
+async function removeCombatantsUI(items) {
+
+    const combatants = items[0]?.turnQueueItems || [];
+    combatants.forEach(combatant => {
+       const row = document.querySelector(`.table-row[data-id="${combatant.id}"]`);
+       if (row) {
+           row.remove();
+       }
+    });
+}
+
+async function getItems() {
+    const response = await fetch('/api/combatants', {
+        method: "GET",
+        headers: {"Content-type": "application/json"}
+    })
+
+    const turnQueueItems = await response.json();
+    await updateCombatantsList(turnQueueItems);
+}
 
 // Function to add a combatant to the active list
-function addToCombat(button) {
+async function addToCombat(button) {
     const templateId = button.getAttribute("data-id");
     const amount = button.closest("li").querySelector(".creaturesAmountInput").value;
 
-    fetch(`/battle_tracker/add?templateId=${templateId}&amount=${amount}`, {
+    const request = {
+        templateId: templateId,
+        amount: amount
+    }
+
+    const response = await fetch(`/api/combatants/add`, {
         method: "POST",
         headers: {"Content-type": "application/json"},
+        body: JSON.stringify(request)
     })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-        })
-        .catch(error => console.error("Error:", error));
+
+    const turnQueueItems = await response.json();
+    await updateCombatantsList(turnQueueItems);
 }
 
-function updateCombatantsList(data) {
+async function updateCombatantsList(turnQueueItems) {
     const combatantsList = document.getElementById("activeCombatants");
     combatantsList.innerHTML = "";
 
-    if (!data.turnQueueItems || !Array.isArray(data.turnQueueItems)) {
-        return;
-    }
+    if (!turnQueueItems) return;
 
-    data.turnQueueItems.forEach((member, index) => {
-        const li = document.createElement("li");
-        li.className = `combatant ${index === 0 ? 'active-turn' : ''}`;
+    const html = await renderThymeleaf();
+    combatantsList.insertAdjacentHTML('beforeend', html);
+}
 
-        if (member.type === "INDIVIDUAL") {
-            li.innerHTML = `
-                <div class="combatant-header" onclick="showEffects(this)">
-                    <span class="name">${member.name}</span>
-                    <span class="initiative">Initiative: ${member.initiative}</span>
-                </div>
-                <div class="combatant-stats">
-                    HP: <span class="hp-value">${member.currentHp}</span>/${member.maxHp}
-                    <button class="remove-btn" data-id="${member.id}">Remove</button>
-                </div>
-                <div class="combatant-controls">
-                    <select class="hp-action">
-                        <option value="damage">Damage</option>
-                        <option value="heal">Heal</option>
-                    </select>
-                    <input type="number" class="hp-amount" min="0" value="0">
-                    <button class="apply-hp-btn" data-id="${member.id}">Apply</button>
-                </div>
-                <div class="combatant-effects" style="display: none">
-                    ${combatantEffects.map(effect => `
-                        <input type="checkbox" 
-                               class="effect-checkbox"
-                               value="${effect}"
-                               data-id="${member.id}"
-                               ${member.statusEffects && member.statusEffects.includes(effect) ? 'checked' : ''}>
-                        <span class="effect-name">${effect[0] + effect.slice(1).toLowerCase()}</span>
-                    `).join('')}
-                </div>
-            `;
-        } else if (member.type === "GROUP") {
-            li.innerHTML = `
-                <div class="group-header" onclick="toggleGroup(this)">
-                    <span class="name">${member.groupName} (${member.members.length})</span>
-                    <span class="initiative">Initiative: ${member.initiative}</span>
-                    <button class="remove-btn" data-id="${member.groupId}">Remove All</button>
-                </div>
-                <div class="group-controls">
-                    <select class="hp-action">
-                        <option value="damage">Damage All</option>
-                        <option value="heal">Heal All</option>
-                    </select>
-                    <input type="number" class="hp-amount" min="0" value="0">
-                    <button class="apply-hp-btn" data-id="${member.groupId}">Apply</button>
-                </div>
-                <div class="group-members" style="display:none">
-                    ${member.members.map(m => `
-                        <div class="group-member">
-                            <span>${m.name}</span>
-                            <span>HP: ${m.currentHp}/${m.maxHp}</span>
-                            <button class="remove-btn" data-id="${m.id}">Remove</button>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+
+async function renderThymeleaf() {
+    const response = await fetch('/battle_tracker/renderCombatants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'text/html'
+        },
+    });
+    return await response.text();
+}
+
+function toggleHiddenContent(headerElement) {
+    const row = headerElement.closest('.table-row');
+    const effectsPanel = row.querySelector('.expandable-content')
+
+    if (effectsPanel) {
+        const isHidden = effectsPanel.style.display === 'none';
+        effectsPanel.style.display = isHidden ? 'block' : 'none';
+
+        const toggleIcon = headerElement.querySelector('.toggle-icon');
+        if (toggleIcon) {
+            toggleIcon.textContent = isHidden ? '▲' : '▼';
         }
-
-        combatantsList.appendChild(li);
-    });
-
-    // Add event listeners after elements are created
-    setupCombatantEventListeners();
-}
-
-function showEffects(headerElement) {
-    const memberSection = headerElement.nextElementSibling.nextElementSibling.nextElementSibling;
-    memberSection.style.display = memberSection.style.display === 'none' ? 'block' : 'none';
-}
-
-function toggleGroup(headerElement) {
-    const membersSection = headerElement.nextElementSibling.nextElementSibling;
-    membersSection.style.display = membersSection.style.display === 'none' ? 'block' : 'none';
-}
-
-function setupCombatantEventListeners() {
-    // Individual HP controls
-    document.querySelectorAll('.apply-hp-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const combatantId = this.getAttribute('data-id');
-            const action = this.parentElement.querySelector('.hp-action').value;
-            const amount = parseInt(this.parentElement.querySelector('.hp-amount').value);
-
-            if (!isNaN(amount)) {
-                applyHpChange(combatantId, action, amount);
-            }
-        });
-    });
-
-    document.querySelectorAll('.effect-checkbox').forEach(box => {
-        box.addEventListener('change', function () {
-            const combatantId = this.getAttribute('data-id');
-            const effect = this.getAttribute('value');
-            const isChecked = this.checked;
-
-            if (isChecked) {
-                applyEffect(combatantId, effect);
-            } else {
-                removeEffect(combatantId, effect);
-            }
-        })
-    })
-
-    // Remove buttons
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            removeItem(this.getAttribute('data-id'));
-        });
-    });
-}
-
-function updateRoundStatus() {
-    const roundCounterHTML = document.getElementById("roundCounter");
-    roundCounterHTML.innerHTML = "";
-
-    try {
-        const roundCounterJSON = localStorage.getItem("roundCounter");
-        const roundCounter = JSON.parse(roundCounterJSON);
-
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <div>${roundCounter}</div>
-        `
-        roundCounterHTML.appendChild(div);
-    } catch (error) {
-        console.error("Error updating round counter:", error);
-        roundCounter.innerHTML = "<div>Error updating round counter</div>";
     }
 }
 
-function handleNextTurn() {
-    fetch("battle_tracker/nextTurn", {
-        method: "POST",
-        headers: {"Content-type": "application/json"},
-    })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("roundCounter", JSON.stringify(data.roundCounter));
-            updateCombatantsList(data);
-            updateRoundStatus();
-        })
-        .catch(error => console.error("Error:", error));
+function advanceTurn(items) {
+    currentTurnIndex = (currentTurnIndex + 1) % items.length;
+    renderTurnOrder();
 }
 
-function applyHpChange(itemId, action, amount) {
-    fetch(`battle_tracker/${action}?itemId=${itemId}&amount=${amount}`, {
-        method: "POST",
-        headers: {"Content-type": "application/json"},
-    })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-            updateRoundStatus();
-        })
+function renderTurnOrder() {
+
 }
 
-function removeItem(itemId) {
-    fetch(`battle_tracker/remove?itemId=${itemId}`, {
-        method: "POST",
-        headers: {"Content-type": "application/json"},
-    })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-        })
-}
-
-function applyEffect(itemId, effect) {
-    fetch(`battle_tracker/applyEffect?itemId=${itemId}&effect=${effect}`, {
-        method: "POST",
-        headers: {"Content-type": "application/json"},
-    })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-        })
-}
-
-function removeEffect(itemId, effect) {
-    fetch(`battle_tracker/removeEffect?itemId=${itemId}&effect=${effect}`, {
-        method: "POST",
-        headers: {"Content-type": "application/json"},
-    })
-        .then(response => response.json())
-        .then(data => {
-            localStorage.setItem("turnQueueItems", data.turnQueueItems);
-            updateCombatantsList(data);
-        })
-}

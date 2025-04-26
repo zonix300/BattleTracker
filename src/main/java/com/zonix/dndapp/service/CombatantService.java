@@ -1,37 +1,33 @@
 package com.zonix.dndapp.service;
 
-import com.zonix.dndapp.entity.CombatGroup;
 import com.zonix.dndapp.entity.Combatant;
 import com.zonix.dndapp.entity.TemplateCreature;
-import com.zonix.dndapp.repository.CombatantRepository;
+import com.zonix.dndapp.repository.TemplateCreatureRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Transactional
 public class CombatantService {
-    private final CombatantRepository combatantRepository;
+    private final TemplateCreatureRepository templateCreatureRepository;
     private final List<Combatant> activeCombatants = new ArrayList<>();
     private Combatant roundStartCombatant = null;
 
     private int currentRound = 1;
 
 
-    public CombatantService(CombatantRepository combatantRepository) {
-        this.combatantRepository = combatantRepository;
+    public CombatantService(TemplateCreatureRepository templateCreatureRepository) {
+        this.templateCreatureRepository = templateCreatureRepository;
     }
 
     public List<TemplateCreature> getAvailableCreatures() {
-        return combatantRepository.findAll();
+        return templateCreatureRepository.findAll();
     }
 
     public Combatant addCombatant(Long templateId) {
-        TemplateCreature templateCreature = combatantRepository.findById(templateId)
+        TemplateCreature templateCreature = templateCreatureRepository.findById(templateId)
                 .orElseThrow(() -> new RuntimeException("Combatant not found"));
 
         Combatant combatant = new Combatant(templateCreature);

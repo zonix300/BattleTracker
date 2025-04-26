@@ -16,6 +16,7 @@ public class Combatant implements TurnQueueItem {
     private Long groupId = null;
     private Set<StatusEffect> statusEffects = EnumSet.noneOf(StatusEffect.class);
     private final TurnItemType combatantType = TurnItemType.INDIVIDUAL;
+    private final TemplateCreature templateCreature;
 
     public Combatant(TemplateCreature templateCreature) {
         this.id = IdGeneratorService.generateId();
@@ -23,7 +24,7 @@ public class Combatant implements TurnQueueItem {
         this.maxHp = rollHitPoints(templateCreature.getHitPoints());
         this.currentHp = this.maxHp;
         this.initiative = rollInitiative() + getDexterityModifier(templateCreature.getDexterity());
-
+        this.templateCreature = templateCreature;
     }
 
     private Integer rollHitPoints(String inputHPString) {
@@ -138,5 +139,9 @@ public class Combatant implements TurnQueueItem {
 
     public void setStatusEffects(Set<StatusEffect> statusEffects) {
         this.statusEffects = statusEffects;
+    }
+
+    public TemplateCreature getTemplateCreature() {
+        return templateCreature;
     }
 }

@@ -1,15 +1,21 @@
 package com.zonix.dndapp.controller;
 
-import com.zonix.dndapp.entity.StatusEffect;
+import com.zonix.dndapp.entity.TurnQueueItem;
 import com.zonix.dndapp.service.CombatGroupService;
 import com.zonix.dndapp.service.CombatantService;
 import com.zonix.dndapp.service.TurnQueueService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -20,18 +26,21 @@ public class BattleTrackerController {
 
     private final TurnQueueService turnQueueService;
 
+    private final SpringTemplateEngine templateEngine;
 
-    public BattleTrackerController(CombatantService combatantService, CombatGroupService combatGroupService, TurnQueueService turnQueueService) {
+
+    public BattleTrackerController(CombatantService combatantService, CombatGroupService combatGroupService, TurnQueueService turnQueueService, SpringTemplateEngine templateEngine) {
         this.combatantService = combatantService;
         this.combatGroupService = combatGroupService;
         this.turnQueueService = turnQueueService;
+        this.templateEngine = templateEngine;
     }
 
     @GetMapping
     public String showBattleTracker(Model model) {
         model.addAttribute("availableCreatures", combatantService.getAvailableCreatures());
         model.addAttribute("turnQueueItems", turnQueueService.getAllItems());
-        return "battle_tracker";
+        return "battle_tracker.html";
     }
 
     @PostMapping("/add")
@@ -49,33 +58,6 @@ public class BattleTrackerController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/remove")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> remove(@RequestParam int itemId) {
-        turnQueueService.remove(itemId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/applyEffect")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> applyEffect(@RequestParam int itemId, @RequestParam String effect) {
-        turnQueueService.applyEffect(itemId, effect);
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/removeEffect")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> removeEffect(@RequestParam int itemId, @RequestParam String effect) {
-        turnQueueService.removeEffect(itemId, effect);
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping("/nextTurn")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> nextTurn() {
@@ -86,30 +68,23 @@ public class BattleTrackerController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/activeCombatants")
+    @PostMapping("/renderCombatants")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getActiveCombatants() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
-    }
+    public String renderAllCombatant(
+            HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse) {
 
-    @PostMapping("/heal")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> applyHeal(@RequestParam int itemId, @RequestParam int amount) {
-        turnQueueService.applyHeal(itemId, amount);
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
-    }
+        List<TurnQueueItem> combatants = turnQueueService.getAllItems();
 
-    @PostMapping("/damage")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> applyDamage(@RequestParam int itemId, @RequestParam int amount) {
-        turnQueueService.applyDamage(itemId, amount);
-        Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        return ResponseEntity.ok(response);
+        WebContext context = new WebContext(
+                JakartaServletWebApplication
+                        .buildApplication(servletRequest.getServletContext())
+                        .buildExchange(servletRequest, servletResponse),
+                servletRequest.getLocale(),
+                Map.of("items", combatants)
+        );
+
+        return templateEngine.process("combatant.html", context);
     }
 
 

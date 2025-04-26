@@ -1,6 +1,7 @@
 package com.zonix.dndapp.entity;
 
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,8 @@ public class TemplateCreature {
     @Lob
     private String specialAbilities;
 
-    @OneToMany(mappedBy = "creature", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CreatureAction> actions = new ArrayList<>();
+//    @OneToMany(mappedBy = "creature", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CreatureAction> actions = new ArrayList<>();
 
     private double challengeRating;
     private Integer experiencePoints;
@@ -222,13 +223,13 @@ public class TemplateCreature {
         this.specialAbilities = specialAbilities;
     }
 
-    public List<CreatureAction> getActions() {
-        return actions;
-    }
+//    public List<CreatureAction> getActions() {
+//        return actions;
+//    }
 
-    public void setActions(List<CreatureAction> actions) {
-        this.actions = actions;
-    }
+//    public void setActions(List<CreatureAction> actions) {
+//        this.actions = actions;
+//    }
 
     public double getChallengeRating() {
         return challengeRating;

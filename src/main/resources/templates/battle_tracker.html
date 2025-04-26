@@ -2,31 +2,75 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Battle Tracker</title>
+    <script src="/js/EffectManager.js"></script>
     <script src="/js/battleTracker.js" defer></script> <!-- External JavaScript -->
+    <link rel="stylesheet" href="css/battle_tracker.css">
 </head>
+
+<header>
+    <h2>Round counter: </h2>
+    <div id="roundCounter">...</div>
+    <h2>Battle Tracker</h2>
+</header>
 <body>
-<h2>Round counter: </h2>
-<div id="roundCounter">...</div>
-<h2>Battle Tracker</h2>
+<div id="availableCreaturesContainer">
+    <h3>Available Creatures</h3>
+    <ul id="availableCreatures">
+        <li th:each="creature : ${availableCreatures}">
+            <span th:text="${creature.name}"></span> HP: <span th:text="${creature.hitPoints}"></span>
+            <input type="number" class="creaturesAmountInput" value="1" min="1">
+            <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
+        </li>
+    </ul>
+</div>
 
-<h3>Available Creatures</h3>
-<ul id="availableCreatures">
-    <li th:each="creature : ${availableCreatures}">
-        <span th:text="${creature.name}"></span> - HP: <span th:text="${creature.hitPoints}"></span>
-        <input type="number" class="creaturesAmountInput" value="1" min="1">
-        <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
-    </li>
-</ul>
-<!-- List of combatants -->
-<h3>Combatants:</h3>
-<ul id="activeCombatants">
+<div id="activeCombatantsContainer">
+    <!-- List of combatants -->
+    <h3>Combatants:</h3>
+    <div class="table-header">
+        <div>Name</div>
+        <div>HP</div>
+        <div>Initiative</div>
+        <div class="controls">
+            <select id="hpAction">
+                <option value="damage">Damage</option>
+                <option value="heal">Heal</option>
+            </select>
+            <input type="number" id="hpAmount" min="1" value="1">
+            <button onclick="applyHpToSelected()">Apply to Selected</button>
+            <button onclick="removeSelected()">Remove Selected</button>
+        </div>
 
-</ul>
+    </div>
+    <div id="activeCombatants" class="combatant-table">
+        <div th:each="item : ${items}">
+            <div th:if="${item.combatantType.name() == 'INDIVIDUAL'}"
+                th:replace="~{combatant.html :: individualCombatant(${item})}">
 
-
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Button to proceed to next turn -->
-<button id="nextTurnButton">Next Turn</button>
+<button id="nextTurnButton" onclick="advanceTurn()">Next Turn</button>
 
+<div class="creatureSheet">
+    <div class="creatureSheetName" th:text="njk"></div>
+    <div class="creatureTypeAndAlignment"></div>
+    <div class="creaturesArmorClass"></div>
+    <div class="creatureHP"></div>
+    <div class="creatureStatBlock">
+
+    </div>
+    <div class="creatureSkills"></div>
+    <div class="creatureSenses"></div>
+    <div class="creatureLanguages"></div>
+    <div class="creatureChallenge"></div>
+    <div class="creaturePB"></div>
+    <div class="creatureTraits">
+    </div>
+    <div class="creatureActions"></div>
+</div>
 </body>
 </html>

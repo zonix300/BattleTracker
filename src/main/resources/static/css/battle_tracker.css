@@ -1,0 +1,216 @@
+:root {
+    /* Base Theme */
+    --strahd-red: #2d0e0e;
+    --misty-blue: #3a4e5e;
+    --vampire-pink: #b33f62;
+
+    /* Text */
+    --parchment: #d4b483;
+    --gravestone: #7e9bad;
+
+    /* Special States */
+    --blood: #9e2b2b;
+    --magic: #5e2c5c;
+}
+
+#availableCreaturesContainer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 320px;
+    background-color: #1a0a0a; /* Dark blood red */
+    border-right: 1px solid #5e2c5c; /* Vampire purple */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    overflow-y: auto;
+    z-index: 100;
+    color: #d4b483; /* Parchment text */
+}
+
+/* Header */
+#availableCreaturesContainer h3 {
+    color: #b33f62; /* Vampire pink */
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #9e2b2b; /* Fresh blood */
+    font-family: 'Cinzel Decorative', serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Lists */
+#combatantCreator,
+#availableCreatures {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* List Items */
+#combatantCreator li,
+#availableCreatures li {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: rgba(45, 14, 14, 0.6); /* Strahd red */
+    border-left: 3px solid #3a4e5e; /* Misty blue */
+    transition: all 0.3s ease;
+}
+
+#availableCreatures li:hover {
+    background: rgba(93, 30, 30, 0.8);
+    border-left-color: #b33f62; /* Vampire kiss */
+}
+
+/* Input Fields */
+#combatantName,
+.combatantHP,
+.combatantInitiative,
+.creaturesAmountInput {
+    display: block;
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 8px;
+    background: #2d0e0e;
+    border: 1px solid #5e2c5c;
+    color: #d4b483;
+    font-family: 'Gothic A1', sans-serif;
+}
+
+/* Buttons */
+#combatantCreator button,
+#availableCreatures button {
+    width: 100%;
+    padding: 8px;
+    background: #5e2c5c; /* Dark gift purple */
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#combatantCreator button:hover,
+#availableCreatures button:hover {
+    background: #b33f62; /* Vampire kiss */
+    box-shadow: 0 0 5px rgba(179, 63, 98, 0.5);
+}
+
+#activeCombatantsContainer {
+    padding-left: 360px;
+}
+
+/* Creature Info Spans */
+#availableCreatures span {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+/* Table Structure */
+.combatant-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Gothic A1', sans-serif;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    background: #2d0e0e;
+    color: #d4b483;
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 2px solid #9e2b2b;
+}
+
+.table-row {
+    border-bottom: 1px solid #3a4e5e;
+}
+
+.combatant-main,
+.group-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.combatant-main:hover {
+    background: rgba(93, 30, 30, 0.2);
+}
+
+.active-turn {
+    background: rgba(93, 30, 30, 0.4);
+    border-left: 3px solid #b33f62;
+}
+
+/* Expandable Content */
+.expandable-content {
+    padding: 10px;
+    background: rgba(58, 78, 94, 0.3);
+    border-top: 1px dashed #5c7284;
+}
+
+.group-table {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    gap: 5px;
+}
+
+.group-member-row {
+    display: contents;
+}
+
+.group-member-row > div {
+    padding: 5px;
+    border-bottom: 1px solid #5c7284;
+}
+
+.effects-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+}
+
+/* Visual Elements */
+.group-badge {
+    background: #5e2c5c;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+.effect-badge {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: #5e2c5c;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 3px;
+}
+
+button {
+    background: #b33f62;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#nextTurnButton {
+    padding-left: 360px;
+}
+
+.expandable-content {
+    transition: height 0.2s ease;
+    overflow: hidden;
+}
