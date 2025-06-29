@@ -2,6 +2,7 @@ package com.zonix.dndapp.entity;
 
 
 import com.zonix.dndapp.service.IdGeneratorService;
+import com.zonix.dndapp.util.DndUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -12,77 +13,37 @@ public class Combatant implements TurnQueueItem {
     private String name;
     private Integer maxHp;
     private Integer currentHp;
+    private String hitDice;
+    private Integer armorClass;
+    private Integer dexterity;
     private Integer initiative;
     private Long groupId = null;
     private Set<StatusEffect> statusEffects = EnumSet.noneOf(StatusEffect.class);
+    private Long templateCreatureId;
     private final TurnItemType combatantType = TurnItemType.INDIVIDUAL;
-    private final TemplateCreature templateCreature;
+
+    public Combatant() {
+
+    }
+
+    public Combatant(Long id, String name, String hitDice, Integer armorClass, Integer dexterity) {
+        this.id = IdGeneratorService.generateId();
+        this.name = name;
+        this.hitDice = hitDice;
+        this.maxHp = DndUtils.roll(hitDice);
+        this.currentHp = this.maxHp;
+        this.armorClass = armorClass;
+        this.dexterity = dexterity;
+        this.initiative = DndUtils.roll(20) + DndUtils.calculateModifier(dexterity);
+        this.templateCreatureId = id;
+    }
 
     public Combatant(TemplateCreature templateCreature) {
         this.id = IdGeneratorService.generateId();
         this.name = templateCreature.getName();
-        this.maxHp = rollHitPoints(templateCreature.getHitPoints());
-        this.currentHp = this.maxHp;
-        this.initiative = rollInitiative() + getDexterityModifier(templateCreature.getDexterity());
-        this.templateCreature = templateCreature;
-    }
+        this.hitDice = templateCreature.getHitDice();
+        this.maxHp = DndUtils.roll(hitDice);
 
-    private Integer rollHitPoints(String inputHPString) {
-        if (inputHPString == null || inputHPString.isEmpty()){
-            return null;
-        }
-
-        try {
-            int start = inputHPString.indexOf('(');
-            int end = inputHPString.indexOf(')');
-
-            if (start == -1 || end == -1 || start >= end) {
-                return null;
-            }
-
-            String expression = inputHPString.substring(start + 1, end).trim();
-
-            Pattern pattern = Pattern.compile("^(\\d+)d(\\d+)([+-]\\d+)?$");
-            Matcher matcher = pattern.matcher(expression);
-
-            if (!matcher.matches()) {
-                return null;
-            }
-
-            int numberOfDice = Integer.parseInt(matcher.group(1));
-            int diceSides = Integer.parseInt(matcher.group(2));
-            int modifier = 0;
-            if (matcher.group(3) != null) {
-                modifier = Integer.parseInt(matcher.group(3));  // e.g., +1 or -3
-            }
-
-
-
-            Random random = new Random();
-            int total = 0;
-            for (int i = 0; i < numberOfDice; i++) {
-                total += random.nextInt(diceSides) + 1;
-            }
-
-            return total + modifier;
-
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private Integer parseHitPoints() {
-        return 0;
-    }
-
-    private Integer getDexterityModifier(Integer dexterity) {
-        return (dexterity - 10)/2;
-    }
-
-    private Integer rollInitiative() {
-        Random random = new Random();
-        return random.nextInt(20) + 1;
     }
 
     @Override
@@ -141,7 +102,51 @@ public class Combatant implements TurnQueueItem {
         this.statusEffects = statusEffects;
     }
 
-    public TemplateCreature getTemplateCreature() {
-        return templateCreature;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getHitDice() {
+        return hitDice;
+    }
+
+    public void setHitDice(String hitDice) {
+        this.hitDice = hitDice;
+    }
+
+    public Integer getArmorClass() {
+        return armorClass;
+    }
+
+    public void setArmorClass(Integer armorClass) {
+        this.armorClass = armorClass;
+    }
+
+    public Integer getDexterity() {
+        return dexterity;
+    }
+
+    public void setDexterity(Integer dexterity) {
+        this.dexterity = dexterity;
+    }
+
+    public void setInitiative(Integer initiative) {
+        this.initiative = initiative;
+    }
+
+    public Long getTemplateCreatureId() {
+        return templateCreatureId;
+    }
+
+    public void setTemplateCreatureId(Long templateCreatureId) {
+        this.templateCreatureId = templateCreatureId;
+    }
+
+    public TurnItemType getCombatantType() {
+        return combatantType;
     }
 }

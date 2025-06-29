@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Data
 public class CustomerDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
+    public CustomerDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

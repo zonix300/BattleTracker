@@ -5,28 +5,23 @@
     <script src="/js/EffectManager.js"></script>
     <script src="/js/battleTracker.js" defer></script> <!-- External JavaScript -->
     <link rel="stylesheet" href="css/battle_tracker.css">
+    <link rel="stylesheet" href="css/right_sidebar.css">
+    <link rel="stylesheet" href="css/left_sidebar.css">
 </head>
-
-<header>
-    <h2>Round counter: </h2>
-    <div id="roundCounter">...</div>
-    <h2>Battle Tracker</h2>
-</header>
 <body>
-<div id="availableCreaturesContainer">
+<div id="available-creatures-container">
     <h3>Available Creatures</h3>
-    <ul id="availableCreatures">
-        <li th:each="creature : ${availableCreatures}">
-            <span th:text="${creature.name}"></span> HP: <span th:text="${creature.hitPoints}"></span>
-            <input type="number" class="creaturesAmountInput" value="1" min="1">
-            <button onclick="addToCombat(this)" th:data-id="${creature.id}">Add to combat</button>
-        </li>
-    </ul>
+    <a href="/creatures/create">Create New Creature</a>
+    <div id="creature-search">
+        <input type="text" id="creature-search-input" placeholder="e.g. kobold" oninput="searchCreature()">
+        <div class="sort-options">
+            <button id="sort-btn" th:data-sort="name">A-Z</button>
+        </div>
+    </div>
+    <ul id="available-creatures"></ul>
 </div>
 
-<div id="activeCombatantsContainer">
-    <!-- List of combatants -->
-    <h3>Combatants:</h3>
+<div id="active-combatants-container">
     <div class="table-header">
         <div>Name</div>
         <div>HP</div>
@@ -39,38 +34,17 @@
             <input type="number" id="hpAmount" min="1" value="1">
             <button onclick="applyHpToSelected()">Apply to Selected</button>
             <button onclick="removeSelected()">Remove Selected</button>
+            <button onclick="advanceTurn()">Next Turn</button>
         </div>
 
     </div>
-    <div id="activeCombatants" class="combatant-table">
-        <div th:each="item : ${items}">
-            <div th:if="${item.combatantType.name() == 'INDIVIDUAL'}"
-                th:replace="~{combatant.html :: individualCombatant(${item})}">
+    <div id="active-combatants" class="combatant-table">
 
-            </div>
-        </div>
     </div>
 </div>
 
-<!-- Button to proceed to next turn -->
-<button id="nextTurnButton" onclick="advanceTurn()">Next Turn</button>
+<div id="creature-sheet-container">
 
-<div class="creatureSheet">
-    <div class="creatureSheetName" th:text="njk"></div>
-    <div class="creatureTypeAndAlignment"></div>
-    <div class="creaturesArmorClass"></div>
-    <div class="creatureHP"></div>
-    <div class="creatureStatBlock">
-
-    </div>
-    <div class="creatureSkills"></div>
-    <div class="creatureSenses"></div>
-    <div class="creatureLanguages"></div>
-    <div class="creatureChallenge"></div>
-    <div class="creaturePB"></div>
-    <div class="creatureTraits">
-    </div>
-    <div class="creatureActions"></div>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.zonix.dndapp.dto;
+package com.zonix.dndapp.dto.request;
 
 import com.zonix.dndapp.entity.StatusEffect;
 import jakarta.validation.constraints.NotNull;

@@ -1,59 +1,44 @@
 package com.zonix.dndapp.controller;
 
+import com.zonix.dndapp.dto.request.TemplateCreatureCreationRequest;
 import com.zonix.dndapp.entity.*;
-import com.zonix.dndapp.repository.TemplateCreatureRepository;
-import com.zonix.dndapp.service.CombatantService;
+import com.zonix.dndapp.service.TemplateCreatureService;
 import com.zonix.dndapp.service.TurnQueueService;
+import jakarta.validation.Valid;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/creatures")
 public class CreatureController {
-    TemplateCreatureRepository templateCreatureRepository;
+    private final TurnQueueService turnQueueService;
+    private final TemplateCreatureService templateCreatureService;
 
-    TurnQueueService turnQueueService;
-
-    public CreatureController(TemplateCreatureRepository templateCreatureRepository, TurnQueueService turnQueueService) {
-        this.templateCreatureRepository = templateCreatureRepository;
+    public CreatureController(TemplateCreatureService templateCreatureService, TurnQueueService turnQueueService) {
+        this.templateCreatureService = templateCreatureService;
         this.turnQueueService = turnQueueService;
     }
 
-    @GetMapping("/custom")
-    public String showCustomCreateForm(Model model) {
-        model.addAttribute("creature", new TemplateCreature());
-        return "addCreature";
+    @GetMapping("/create")
+    public String getCreatureCreateTemplate() {
+        return "create_template_creature.html";
     }
 
-    @PostMapping("/custom")
-    public String saveCustomCreature(
-            @Validated @ModelAttribute("creature") TemplateCreature creature,
-            BindingResult result) {
-
-        if (result.hasErrors()) {
-            return "addCreature";
-        }
-
-        templateCreatureRepository.save(creature);
-
-        return "redirect:/creatures";
+    @PostMapping("/create")
+    public ResponseEntity<TemplateCreature> create(@Valid @RequestBody TemplateCreatureCreationRequest request) {
+        TemplateCreature creature = templateCreatureService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creature);
     }
 
-    @GetMapping("/{id}/template")
-    public String getCreatureTemplate(@PathVariable Long id, Model model) {
-        TurnQueueItem item = turnQueueService.findItemById(id);
-        if (item.getType() == TurnItemType.INDIVIDUAL) {
-            Combatant combatant = (Combatant) item;
-            model.addAttribute("creature", combatant.getTemplateCreature());
-        }
-        if (item.getType() == TurnItemType.GROUP) {
-            CombatGroup group = (CombatGroup) item;
-            model.addAttribute("creature", group.getMembers().get(0).getTemplateCreature());
-        }
-        return "fragment/creature_template :: template";
+    @GetMapping("/renderTemplateCreature")
+    public String getCreatureTemplate(@Param(value = "id") Long id, Model model) {
+        TemplateCreature creature = templateCreatureService.findTemplateCreatureById(id);
+        model.addAttribute("creature", creature);
+        return "template_creature.html";
     }
 
 

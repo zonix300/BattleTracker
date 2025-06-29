@@ -2,6 +2,7 @@ package com.zonix.dndapp.service;
 
 import com.zonix.dndapp.entity.Combatant;
 import com.zonix.dndapp.entity.TemplateCreature;
+import com.zonix.dndapp.entity.TurnQueueItem;
 import com.zonix.dndapp.repository.TemplateCreatureRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +28,10 @@ public class CombatantService {
     }
 
     public Combatant addCombatant(Long templateId) {
-        TemplateCreature templateCreature = templateCreatureRepository.findById(templateId)
+        Combatant combatant = templateCreatureRepository.findCreatureSummariesById(templateId)
                 .orElseThrow(() -> new RuntimeException("Combatant not found"));
+        System.out.println(combatant.getCurrentHp());
 
-        Combatant combatant = new Combatant(templateCreature);
         activeCombatants.add(combatant);
         return combatant;
     }

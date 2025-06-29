@@ -1,6 +1,6 @@
 package com.zonix.dndapp.controller;
 
-import com.zonix.dndapp.entity.TurnQueueItem;
+import com.zonix.dndapp.entity.*;
 import com.zonix.dndapp.service.CombatGroupService;
 import com.zonix.dndapp.service.CombatantService;
 import com.zonix.dndapp.service.TurnQueueService;
@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.ModelAndView;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
@@ -61,10 +64,9 @@ public class BattleTrackerController {
     @PostMapping("/nextTurn")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> nextTurn() {
-        turnQueueService.nextTurn();
+        TurnQueueItem turnQueueItem = turnQueueService.nextTurn();
         Map<String, Object> response = new HashMap<>();
-        response.put("turnQueueItems", turnQueueService.getAllItems());
-        response.put("roundCounter", combatantService.getCurrentRound());
+        response.put("currentQueueItem", turnQueueItem);
         return ResponseEntity.ok(response);
     }
 
@@ -85,6 +87,58 @@ public class BattleTrackerController {
         );
 
         return templateEngine.process("combatant.html", context);
+    }
+
+    @PostMapping("/renderCreatures")
+    @ResponseBody
+    public String renderAvailableCreatures(
+            HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse,
+            @RequestBody List<Combatant> creatures) {
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("availableCreatures", creatures);
+        modelAndView.setViewName("available_creature.html");
+
+        WebContext context = new WebContext(
+                JakartaServletWebApplication
+                        .buildApplication(servletRequest.getServletContext())
+                        .buildExchange(servletRequest, servletResponse),
+                servletRequest.getLocale(),
+                Map.of("availableCreatures", creatures)
+        );
+
+        return templateEngine.process("available_creature.html", context);
+    }
+
+    @PostMapping("/renderTemplateCreature")
+    @ResponseBody
+    public String renderSelectedTemplateCreature(
+            @RequestParam Long itemId,
+            HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse) {
+
+        TurnQueueItem item = turnQueueService.findItemById(itemId);
+        Combatant combatant = null;
+
+        if (item.getType() == TurnItemType.GROUP) {
+            CombatGroup group = (CombatGroup) item;
+            item = group.getMembers().get(0);
+        }
+
+        if (item.getType() == TurnItemType.INDIVIDUAL) {
+            combatant = (Combatant) item;
+        }
+
+        WebContext context = new WebContext(
+                JakartaServletWebApplication
+                        .buildApplication(servletRequest.getServletContext())
+                        .buildExchange(servletRequest, servletResponse),
+                servletRequest.getLocale(),
+                Map.of("creature", combatant.getTemplateCreatureId())
+        );
+
+        return templateEngine.process("template_creature.html", context);
     }
 
 

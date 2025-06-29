@@ -1,14 +1,12 @@
 package com.zonix.dndapp.service;
 
-import com.zonix.dndapp.dto.HpChangeType;
+import com.zonix.dndapp.dto.request.HpChangeType;
 import com.zonix.dndapp.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class TurnQueueService {
@@ -17,6 +15,8 @@ public class TurnQueueService {
     private final CombatGroupService combatGroupService;
 
     private static final Logger logger = LoggerFactory.getLogger(TurnQueueService.class);
+    private int currentTurn = 0;
+    private int currentRound = 1;
 
     public TurnQueueService(CombatantService combatantService, CombatGroupService combatGroupService) {
         this.combatantService = combatantService;
@@ -53,15 +53,9 @@ public class TurnQueueService {
         return turnQueueItems;
     }
 
-    public void nextTurn() {
-        if (!turnQueueItems.isEmpty()) {
-            TurnQueueItem current = turnQueueItems.remove(0);
-            turnQueueItems.add(current);
-        }
-    }
-
     public List<TurnQueueItem> updateHp(Set<Long> itemIds, int amount, HpChangeType type) {
         List<TurnQueueItem> updatedTurnQueueItems = new ArrayList<>();
+
         for (Long itemId : itemIds) {
             TurnQueueItem item = findItemById(itemId);
             if (item == null) continue;
@@ -79,6 +73,7 @@ public class TurnQueueService {
             }
             updatedTurnQueueItems.add(item);
         }
+
         return updatedTurnQueueItems;
     }
 
@@ -155,6 +150,10 @@ public class TurnQueueService {
         return null;
     }
 
+
+
+
+
     public CombatGroup findCombatGroupById(int groupId) {
         return turnQueueItems.stream()
                 .filter(CombatGroup.class::isInstance)
@@ -162,6 +161,29 @@ public class TurnQueueService {
                 .filter(group -> group.getGroupId() == groupId)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public TurnQueueItem nextTurn() {
+        currentTurn++;
+        if (currentTurn >= turnQueueItems.size()) {
+            currentTurn = 0;
+            currentRound++;
+            startNewRound();
+        }
+
+        return getCurrentItem();
+    }
+
+    public TurnQueueItem getCurrentItem() {
+        return turnQueueItems.get(currentTurn);
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
+    }
+
+    public void startNewRound() {
+
     }
 
     private void logHealing(Combatant combatant, int amount, int newHp) {

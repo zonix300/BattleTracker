@@ -1,14 +1,15 @@
 package com.zonix.dndapp.controller;
 
-import com.zonix.dndapp.dto.EffectBatchRequest;
-import com.zonix.dndapp.dto.HpUpdateRequest;
-import com.zonix.dndapp.dto.ItemAddRequest;
-import com.zonix.dndapp.dto.ItemRemovalRequest;
+import com.zonix.dndapp.dto.request.*;
 import com.zonix.dndapp.entity.Combatant;
+import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.entity.TurnQueueItem;
+import com.zonix.dndapp.service.TemplateCreatureService;
 import com.zonix.dndapp.service.TurnQueueService;
 import jakarta.validation.Valid;
-import org.hibernate.engine.spi.EffectiveEntityGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +22,16 @@ import java.util.Map;
 public class CombatantController {
 
     private final TurnQueueService turnQueueService;
+    private final TemplateCreatureService templateCreatureService;
 
-    public CombatantController(TurnQueueService turnQueueService) {
+    public CombatantController(TurnQueueService turnQueueService, TemplateCreatureService templateCreatureService) {
         this.turnQueueService = turnQueueService;
+        this.templateCreatureService = templateCreatureService;
+
     }
+
+
+    private static final Logger log = LoggerFactory.getLogger(CombatantController.class);
 
     @GetMapping
     public ResponseEntity<Map<String, List<TurnQueueItem>>> getItems() {
@@ -36,7 +43,9 @@ public class CombatantController {
 
     @PatchMapping("/hp")
     public ResponseEntity<Map<String, List<TurnQueueItem>>> updateHp(@Valid @RequestBody HpUpdateRequest request) {
+        log.info("Received request to update HP: {}", request);
         List<TurnQueueItem> items = turnQueueService.updateHp(request.combatantIds(), request.amount(), request.type());
+        log.info("Updated items: {}", items);
         Map<String, List<TurnQueueItem>> response = new HashMap<>();
         response.put("turnQueueItems", items);
         return ResponseEntity.ok(response);
@@ -63,6 +72,15 @@ public class CombatantController {
         List<TurnQueueItem> items = turnQueueService.addItems(request.templateId(), request.amount());
         Map<String, List<TurnQueueItem>> response = new HashMap<>();
         response.put("turnQueueItems", items);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Page<Combatant>> search(@Valid @RequestBody TemplateCreatureSearchRequest request) {
+        Page<Combatant> response;
+
+        response = templateCreatureService.search(request);
+
         return ResponseEntity.ok(response);
     }
 }

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div class="creature-container" th:each="creature : ${availableCreatures}">
+    <span class="creature-name" th:text="${creature.name}"></span>
+    <button class="add-btn" onclick="addToCombat(this)" th:data-id="${creature.templateCreatureId}">+</button>
+</div>
+</body>
+</html>

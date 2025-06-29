@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+</body>
+</html>
 <div th:each="member : ${items}"
      class="table-row"
-     th:attr="data-id=${member.id}"
-     onclick="selectCombatant(this)">
+     th:data-id="${member.id}"
+     th:data-template-id="${member.templateCreatureId}">
     <div th:if="${member.type == T(com.zonix.dndapp.entity.TurnItemType).INDIVIDUAL}" class="combatant-row">
-        <div class="combatant-main">
+        <div class="combatant-main" onclick="selectCombatant(this)">
             <div class="name-cell" th:text="${member.name}"></div>
             <div class="hp-cell" th:text="${member.currentHp} + '/' + ${member.maxHp}"></div>
             <div class="initiative-cell" th:text="${member.initiative}"></div>
@@ -25,7 +27,7 @@
                            th:name="statusEffect"
                            th:value="${effect}"
                            th:checked="${member.statusEffects.contains(effect)}"
-                            onchange="effectManager.queueUpdates(this)">
+                           onchange="effectManager.queueUpdates(this)">
                     <label th:for="${member.id} + '-' + ${effect}"
                            th:text="${#strings.capitalize(#strings.toLowerCase(effect.name()))}">
                         Effect Name
@@ -37,7 +39,7 @@
     </div>
 
     <div th:if="${member.type == T(com.zonix.dndapp.entity.TurnItemType).GROUP}" class="group-row">
-        <div class="group-main">
+        <div class="group-main" onclick="selectCombatant(this)">
             <div class="name-cell" th:text="${member.name}"></div>
             <div class="hp-cell"></div>
             <div class="initiative-cell" th:text="${member.initiative}"></div>
@@ -48,7 +50,7 @@
             </button>
         </div>
         <div class="expandable-content" style="display: none">
-            <div th:each="combatant : ${member.members}" class="group-member-row" th:attr="data-id=${combatant.id}">
+            <div th:each="combatant : ${member.members}" class="group-member-row" th:attr="data-id=${combatant.id}" onclick="selectCombatant(this)">
                 <div class="combatant-main">
                     <div class="name-cell" th:text="${combatant.name}"></div>
                     <div class="hp-cell" th:text="${combatant.currentHp} + '/' + ${combatant.maxHp}"></div>
@@ -59,5 +61,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>

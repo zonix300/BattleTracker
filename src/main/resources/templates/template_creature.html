@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="creature-sheet-header">
+    <div class="creature-sheet-name" th:text="${creature.name}"></div>
+</div>
+<div class="creature-sheet-subheader">
+    <span class="creature-type-and-alignment" th:text="${creature.size} + ' ' + ${creature.creatureType} + ', ' + ${creature.alignment}"></span>
+    <span class="creature-type-and-alignment" th:if="${creature.alignment} == ''">unaligned</span>
+</div>
+<div class="creature-core-stats">
+    <div><span class="creature-stat-name"><b>Armor Class</b></span> <span class="creaturesArmorClass"
+                                                                          th:text="${creature.armorClass}"></span>
+    </div>
+    <div><span class="creature-stat-name"><b>Hit Points</b></span> <span class="creatureHP"
+                                                                         th:text="${creature.hitPoints} + ' (' + ${creature.hitDice} + ')'"></span>
+    </div>
+    <div class="creature-speed">
+        <span th:if="${creature.speeds.empty}">No movement speeds</span>
+        <span class="creature-stat-name"><b>Speed </b></span>
+        <span th:each="speed, stat : ${creature.speeds}">
+        <span th:text="${speed.name} + ' ' + ${speed.value} + ' ft.'"></span><!--
+        --><span th:unless="${stat.last}">, </span>
+    </span>
+    </div>
+</div>
+<div class="creature-ability-scores">
+    <div class="ability">
+        <div class="creature-stat-name">STR</div>
+        <div class="stat-value"
+             th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.strength)}"></div>
+    </div>
+    <div class="ability">
+        <div class="creature-stat-name">DEX</div>
+        <div class="stat-value"
+             th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.dexterity)}"></div>
+    </div>
+    <div class="ability">
+        <div class="creature-stat-name">CON</div>
+        <div class="stat-value"
+             th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.constitution)}">18
+        </div>
+    </div>
+    <div class="ability">
+        <div class="creature-stat-name">INT</div>
+        <div class="stat-value"
+             th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.intelligence)}">17
+        </div>
+    </div>
+    <div class="ability">
+        <div class="creature-stat-name">WIS</div>
+        <div class="stat-value" th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.wisdom)}">
+            15
+        </div>
+    </div>
+    <div class="ability">
+        <div class="creature-stat-name">CHA</div>
+        <div class="stat-value" th:text="${T(com.zonix.dndapp.util.DndUtils).getFormattedModifier(creature.charisma)}">
+            17
+        </div>
+    </div>
+</div>
+<div class="creature-desc-stats">
+    <div class="creature-saving-throws"
+         th:if="${creature.strengthSave} != null or ${creature.dexteritySave} != null or ${creature.constitutionSave} != null or ${creature.intelligenceSave} != null or ${creature.wisdomSave} != null or ${creature.charismaSave} != null">
+        <span class="creature-stat-name"><b>Saving Throws</b></span>
+        <span class="throw" th:if="${creature.strengthSave}">
+        <span class="throw-name">strength</span>
+        <span class="throw-value"
+              th:text=" ${creature.strengthSave >= 0 ? '+' + creature.strengthSave : creature.strengthSave} + ', '"></span>
+    </span>
+        <span class="throw" th:if="${creature.dexteritySave}">
+        <span class="throw-name">dexterity</span>
+        <span class="throw-value"
+              th:text=" ${creature.dexteritySave >= 0 ? '+' + creature.dexteritySave : creature.dexteritySave} + ', '"></span>
+    </span>
+        <span class="throw" th:if="${creature.constitutionSave}">
+        <span class="throw-name">constitution</span>
+        <span class="throw-value"
+              th:text=" ${creature.constitutionSave >= 0 ? '+' + creature.constitutionSave : creature.constitutionSave} + ', '"></span>
+    </span>
+        <span class="throw" th:if="${creature.intelligenceSave}">
+        <span class="throw-name">intelligence</span>
+        <span class="throw-value"
+              th:text=" ${creature.intelligenceSave >= 0 ? '+' + creature.intelligenceSave : creature.intelligenceSave} + ', '"></span>
+    </span>
+        <span class="throw" th:if="${creature.wisdomSave}">
+        <span class="throw-name">wisdom</span>
+        <span class="throw-value"
+              th:text=" ${creature.wisdomSave >= 0 ? '+' + creature.wisdomSave : creature.wisdomSave} + ', '"></span>
+    </span>
+        <span class="throw" th:if="${creature.charismaSave}">
+        <span class="throw-name">charisma</span>
+        <span class="throw-value"
+              th:text=" ${creature.charismaSave >= 0 ? '+' + creature.charismaSave : creature.charismaSave} + ', '"></span>
+    </span>
+    </div>
+    <div class="creature-skills" th:if="${not creature.skills.empty}">
+        <span class="creature-stat-name"><b>Skills</b></span>
+        <span th:each="skill : ${creature.skills}" th:with="formatted=${skill.value >= 0}
+    ? ${skill.name + ' +' + skill.value}
+    : ${skill.name + ' ' + skill.value}">
+        <span th:text="${formatted}"></span>
+    </span>
+    </div>
+    <div class="creature-damage-resistances" th:if="${creature.damageResistances} != ''">
+        <span class="creature-stat-name"><b>Damage Resistances</b></span>
+        <span th:text="${creature.damageResistances}"></span>
+    </div>
+    <div class="creature-damage-immunities" th:if="${creature.damageImmunities} != ''">
+        <span class="creature-stat-name"><b>Damage Immunities</b></span>
+        <span th:text="${creature.damageImmunities}"></span>
+    </div>
+    <div class="creature-condition-immunities" th:if="${creature.conditionImmunities} != ''">
+        <span class="creature-stat-name"><b>Condition Immunities</b></span>
+        <span th:text="${creature.conditionImmunities}"></span>
+    </div>
+    <div class="creature-senses" th:if="${creature.senses} != ''">
+        <span class="creature-stat-name"><b>Senses</b></span>
+        <span th:text="${creature.senses}"></span>
+    </div>
+    <div class="creature-languages" th:if="${creature.languages} != ''">
+        <span class="creature-stat-name"><b>Languages</b></span>
+        <span th:text="${creature.languages}"></span>
+    </div>
+    <div class="creature-challenge">
+        <span class="creature-stat-name"><b>Challenge</b></span>
+        <span th:text="${creature.challengeRating}"></span>
+    </div>
+</div>
+<div class="creature-special-abilities">
+    <div class="creature-special-ability" th:each="ability : ${creature.abilities}">
+        <span class="creature-stat-name"><i><b th:text="${ability.name} + '. '"></b></i></span> <span
+            th:text="${ability.description}"></span>
+    </div>
+</div>
+<div class="creature-actions" th:if="${not creature.actions.empty}">
+    <span class="creature-action-title">Actions</span>
+    <div class="creature-action" th:each="action : ${creature.actions}">
+        <span class="creature-stat-name"><i><b th:text="${action.name} + '. '"></b></i></span> <span
+            th:text="${action.description}"></span>
+    </div>
+</div>
+<div class="creature-legendary-actions"
+     th:if="${not creature.legendaryActions.empty} and ${creature.legendaryDescription}">
+    <span class="creature-legendary-actions-title">Legendary Actions</span>
+    <div class="creature-legendary-description" th:text="${creature.legendaryDescription}"></div>
+    <div th:each="action : ${creature.legendaryActions}">
+        <span class="creature-stat-name"><i><b th:text="${action.name} + '. '"></b></i></span> <span
+            th:text="${action.description}"></span>
+    </div>
+</div>
+
+</body>
+</html>

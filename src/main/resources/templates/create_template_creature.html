@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Creature Template</title>
+    <link rel="stylesheet" href="/css/creature_form.css">
+</head>
+<body>
+<div class="creature-form-container">
+    <h1 class="form-title">Create New Creature Template</h1>
+
+    <form id="creatureForm" class="creature-form" action="/api/creatures" method="POST">
+        <!-- Basic Information Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Basic Information</legend>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name">Creature Name*</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="size">Size*</label>
+                    <select id="size" name="size" required>
+                        <option value="">Select size</option>
+                        <option value="Tiny">Tiny</option>
+                        <option value="Small">Small</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Large">Large</option>
+                        <option value="Huge">Huge</option>
+                        <option value="Gargantuan">Gargantuan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="creatureType">Type*</label>
+                    <input type="text" id="creatureType" name="creatureType" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="alignment">Alignment</label>
+                    <input type="text" id="alignment" name="alignment">
+                </div>
+                <div class="form-section">
+                    <legend class="section-title">Speed</legend>
+                    <div class="tags-container" id="speedContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="speedInput" placeholder="e.g., '30 ft.' or 'fly 60 ft.'">
+                        <button type="button" class="add-tag-button">Add Speed</button>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <legend class="section-title">Senses</legend>
+                    <div class="tags-container" id="sensesContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="senseInput" placeholder="e.g., 'darkvision 60 ft.'">
+                        <button type="button" class="add-tag-button">Add Sense</button>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <legend class="section-title">Languages</legend>
+                    <div class="tags-container" id="languagesContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="languageInput" placeholder="e.g., 'Common', 'Draconic'">
+                        <button type="button" class="add-tag-button">Add Language</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="challengeRating">Challenge Rating/Level*</label>
+                    <input type="text" id="challengeRating" name="challengeRating" required>
+                </div>
+            </div>
+
+        </fieldset>
+
+        <!-- Combat Stats Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Combat Stats</legend>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="armorClass">Armor Class (AC)*</label>
+                    <input type="number" id="armorClass" name="armorClass" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="armorDescription">Armor Description</label>
+                    <input type="text" id="armorDescription" name="armorDescription">
+                </div>
+
+                <div class="form-group">
+                    <label for="hitPoints">Hit Points*</label>
+                    <input type="number" id="hitPoints" name="hitPoints" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hitDice">Hit Dice</label>
+                    <input type="text" id="hitDice" name="hitDice">
+                </div>
+            </div>
+        </fieldset>
+
+
+        <!-- Ability Scores Section -->
+        <!-- Replace your existing Ability Scores section with this -->
+        <fieldset class="form-section">
+            <legend class="section-title">Ability Scores & Saving Throws</legend>
+
+            <div class="ability-scores-grid">
+                <!-- STR -->
+                <div class="ability-score">
+                    <label for="strength">STR*</label>
+                    <input type="number" id="strength" name="strength" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-str" name="savingThrowProficiencies[]" value="strength">
+                        <label for="save-str" title="Proficient">P</label>
+                    </div>
+                </div>
+
+                <!-- DEX -->
+                <div class="ability-score">
+                    <label for="dexterity">DEX*</label>
+                    <input type="number" id="dexterity" name="dexterity" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-dex" name="savingThrowProficiencies[]" value="dexterity">
+                        <label for="save-dex" title="Proficient">P</label>
+                    </div>
+                </div>
+
+                <!-- CON -->
+                <div class="ability-score">
+                    <label for="constitution">CON*</label>
+                    <input type="number" id="constitution" name="constitution" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-con" name="savingThrowProficiencies[]" value="constitution">
+                        <label for="save-con" title="Proficient">P</label>
+                    </div>
+                </div>
+
+                <!-- INT -->
+                <div class="ability-score">
+                    <label for="intelligence">INT*</label>
+                    <input type="number" id="intelligence" name="intelligence" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-int" name="savingThrowProficiencies[]" value="intelligence">
+                        <label for="save-int" title="Proficient">P</label>
+                    </div>
+                </div>
+
+                <!-- WIS -->
+                <div class="ability-score">
+                    <label for="wisdom">WIS*</label>
+                    <input type="number" id="wisdom" name="wisdom" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-wis" name="savingThrowProficiencies[]" value="wisdom">
+                        <label for="save-wis" title="Proficient">P</label>
+                    </div>
+                </div>
+
+                <!-- CHA -->
+                <div class="ability-score">
+                    <label for="charisma">CHA*</label>
+                    <input type="number" id="charisma" name="charisma" min="1" max="30" required>
+                    <div class="save-proficiency">
+                        <input type="checkbox" id="save-cha" name="savingThrowProficiencies[]" value="charisma">
+                        <label for="save-cha" title="Proficient">P</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="proficiency-note">
+                <small>P = Saving Throw Proficiency</small>
+            </div>
+        </fieldset>
+
+        <div class="form-section">
+            <legend class="section-title">Special Abilities</legend>
+            <div class="actions-container" id="specialAbilitiesContainer">
+                <!-- Special abilities will be added here -->
+            </div>
+            <button type="button" class="add-button" id="addSpecialAbilityBtn">Add Special Ability</button>
+        </div>
+
+        <!-- Skills Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Skills</legend>
+            <div class="skills-grid">
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-acrobatics" name="skills" value="Acrobatics">
+                    <label for="skill-acrobatics">Acrobatics (DEX)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-animal" name="skills" value="Animal Handling">
+                    <label for="skill-animal">Animal Handling (WIS)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-arcana" name="skills" value="Arcana">
+                    <label for="skill-arcana">Arcana (INT)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-athletics" name="skills" value="Athletics">
+                    <label for="skill-athletics">Athletics (STR)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-deception" name="skills" value="Deception">
+                    <label for="skill-deception">Deception (CHA)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-history" name="skills" value="History">
+                    <label for="skill-history">History (INT)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-insight" name="skills" value="Insight">
+                    <label for="skill-insight">Insight (WIS)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-intimidation" name="skills" value="Intimidation">
+                    <label for="skill-intimidation">Intimidation (CHA)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-investigation" name="skills" value="Investigation">
+                    <label for="skill-investigation">Investigation (INT)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-medicine" name="skills" value="Medicine">
+                    <label for="skill-medicine">Medicine (WIS)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-nature" name="skills" value="Nature">
+                    <label for="skill-nature">Nature (INT)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-perception" name="skills" value="Perception">
+                    <label for="skill-perception">Perception (WIS)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-performance" name="skills" value="Performance">
+                    <label for="skill-performance">Performance (CHA)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-persuasion" name="skills" value="Persuasion">
+                    <label for="skill-persuasion">Persuasion (CHA)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-religion" name="skills" value="Religion">
+                    <label for="skill-religion">Religion (INT)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-sleight" name="skills" value="Sleight of Hand">
+                    <label for="skill-sleight">Sleight of Hand (DEX)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-stealth" name="skills" value="Stealth">
+                    <label for="skill-stealth">Stealth (DEX)</label>
+                </div>
+                <div class="skill-option">
+                    <input type="checkbox" id="skill-survival" name="skills" value="Survival">
+                    <label for="skill-survival">Survival (WIS)</label>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Damage Properties Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Damage Properties</legend>
+
+            <div class="damage-properties-grid">
+                <div class="property-group">
+                    <h3>Vulnerabilities</h3>
+                    <div class="tags-container" id="vulnerabilitiesContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="vulnerabilityInput" placeholder="Add vulnerability">
+                        <button type="button" class="add-tag-button">Add</button>
+                    </div>
+                </div>
+
+                <div class="property-group">
+                    <h3>Resistances</h3>
+                    <div class="tags-container" id="resistancesContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="resistanceInput" placeholder="Add resistance">
+                        <button type="button" class="add-tag-button">Add</button>
+                    </div>
+                </div>
+
+                <div class="property-group">
+                    <h3>Immunities</h3>
+                    <div class="tags-container" id="immunitiesContainer"></div>
+                    <div class="tag-input-group">
+                        <input type="text" id="immunityInput" placeholder="Add immunity">
+                        <button type="button" class="add-tag-button">Add</button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Actions Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Actions</legend>
+            <div class="actions-container" id="actionsContainer">
+                <!-- Actions will be added here -->
+            </div>
+            <button type="button" class="add-button" id="addActionBtn">Add Action</button>
+        </fieldset>
+
+        <!-- Bonus Actions Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Bonus Actions</legend>
+            <div class="actions-container" id="bonusActionsContainer">
+                <!-- Bonus actions will be added here -->
+            </div>
+            <button type="button" class="add-button" id="addBonusActionBtn">Add Bonus Action</button>
+        </fieldset>
+
+        <!-- Legendary Actions Section -->
+        <fieldset class="form-section">
+            <legend class="section-title">Legendary Actions</legend>
+            <div class="actions-container" id="legendaryActionsContainer">
+                <!-- Legendary actions will be added here -->
+            </div>
+            <button type="button" class="add-button" id="addLegendaryActionBtn">Add Legendary Action</button>
+        </fieldset>
+        <div class="form-group">
+            <label for="description">Description*</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+        </div>
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="button" class="cancel-button">Cancel</button>
+            <button type="submit" class="submit-button">Create Creature</button>
+        </div>
+
+    </form>
+</div>
+
+<script src="/js/creatureForm.js"></script>
+</body>
+</html>
