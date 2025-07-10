@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Battle Tracker</title>
+    <script src="/js/EffectManager.js"></script>
+    <script src="/js/battleTracker.js" defer></script> <!-- External JavaScript -->
+    <link rel="stylesheet" href="css/battle_tracker.css">
+    <link rel="stylesheet" href="css/right_sidebar.css">
+    <link rel="stylesheet" href="css/left_sidebar.css">
+</head>
+<body>
+<div id="available-creatures-container">
+    <h3>Available Creatures</h3>
+    <a href="/creatures/create">Create New Creature</a>
+    <div id="creature-search">
+        <input type="text" id="creature-search-input" placeholder="e.g. kobold" oninput="searchCreature()">
+        <div class="sort-options">
+            <button id="sort-btn" th:data-sort="name">A-Z</button>
+        </div>
+    </div>
+    <ul id="available-creatures"></ul>
+</div>
+
+<div id="active-combatants-container">
+    <div class="table-header">
+        <div>Name</div>
+        <div>HP</div>
+        <div>Initiative</div>
+        <div class="controls">
+            <select id="hpAction">
+                <option value="damage">Damage</option>
+                <option value="heal">Heal</option>
+            </select>
+            <input type="number" id="hpAmount" min="1" value="1">
+            <button onclick="applyHpToSelected()">Apply to Selected</button>
+            <button onclick="removeSelected()">Remove Selected</button>
+            <button onclick="advanceTurn()">Next Turn</button>
+        </div>
+
+    </div>
+    <div id="active-combatants" class="combatant-table">
+
+    </div>
+</div>
+
+<div id="creature-sheet-container">
+
+</div>
+</body>
+</html>

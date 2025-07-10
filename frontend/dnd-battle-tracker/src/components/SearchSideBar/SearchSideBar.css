@@ -1,0 +1,86 @@
+.search-input {
+    display: block;
+    width: 90%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background-color: var(--accent-dark);
+    font-size: 1rem;
+    color: var(--text-light);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: var(--highlight-muted);
+}
+
+.search-results {
+    padding: 1rem;
+}
+
+.search-result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    
+}
+
+.add-combatant-button {
+    background-color: var(--accent-light);
+    color: var(--text-light);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    gap: 0.3rem;
+    border: 2px solid var(--border-light);
+    transition: background-color 0.2s ease;
+}
+
+.add-combatant-button:hover {
+    background-color: var(--highlight-soft);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  background-color: var(--sidebar-bg);
+  color: var(--text-light);
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: var(--accent-light);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.page-number {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.page-number:hover {
+  background-color: var(--accent-dark);
+}
+
+.page-number.active {
+  background-color: var(--bg-dark);
+  font-weight: bold;
+}

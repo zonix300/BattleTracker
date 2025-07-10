@@ -1,0 +1,23 @@
+#root {
+    display: grid;
+    grid-template-columns: 20vw 1fr 300px;
+    height: 100vh;
+    color: var(--text-light);
+}
+
+.search-sidebar-container {
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: var(--sidebar-bg);
+}
+
+.combatants-container {
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.creature-sheet-container {
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: var(--accent-dark);
+}
