@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { apiClient } from "../services/api";
 import { getAuthToken, getCsrfToken } from "../util/auth";
+import { clearAuthData, isTokenExpired } from "../components/Auth/Auth";
 
 interface ApiCallOptions {
     showLoadingFor?: string;
@@ -24,7 +25,7 @@ export const useSecureApiCall = () => {
             onSuccess,
             onError,
             validateInput,
-            skipAuth = true
+            skipAuth = false
         } = options;
 
         if (showLoadingFor && loadingStates.has(showLoadingFor)) {
@@ -39,11 +40,21 @@ export const useSecureApiCall = () => {
             if (showLoadingFor) {
                 setLoadingStates(prev => new Set(prev).add(showLoadingFor));
             }
-
+        
             const headers: Record<string, string> = {};
+
             if (!skipAuth) {
-                headers["Authorization"] = `Bearer ${getAuthToken()}`;
-                //headers["X-CSRF-Token"] = getCsrfToken();
+                const token = getAuthToken();
+                if (!token) {
+                    throw new Error("No authentication token found");
+                }
+
+                if (isTokenExpired(token)) {
+                    clearAuthData();
+                    throw new Error("Token is expired");
+                }
+
+                headers["Authorization"] = `Bearer ${token}`;
             }
 
             const response = await apiClient[method](endpoint, data, {headers});
@@ -51,8 +62,18 @@ export const useSecureApiCall = () => {
             if (onSuccess) {
                 onSuccess(response.data)
             }
-        } catch (error) {
-            console.error(`API call failed: ${method.toUpperCase()} ${endpoint}`);
+
+            return response.data;
+
+        } catch (error: any) {
+            console.error(`API call failed: ${method.toUpperCase()} ${endpoint}`, error);
+
+            if (error.response?.status === 401) {
+                clearAuthData();
+                window.location.href = '/login';
+                return;
+            }
+
             if (onError) {
                 onError(error);
             }
