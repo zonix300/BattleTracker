@@ -1,16 +1,33 @@
 import React from 'react';
 import CreateCreatureForm from './components/CreatureForm/CreatureForm';
 import BattleTracker from './components/BattleTracker/BattleTracker';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute'
+import { Register } from './components/Auth/Register/Register'
+import { ToastContainer } from 'react-toastify';
+import { Login } from './components/Auth/Login/Login';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path='/' element={<BattleTracker />} />
-        <Route path='/create' element={<CreateCreatureForm />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        
+        <Route 
+          path="/battle-tracker"
+          element={
+            <ProtectedRoute>
+              <BattleTracker />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </Router>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+      />
+    </BrowserRouter>
   );
 }
 

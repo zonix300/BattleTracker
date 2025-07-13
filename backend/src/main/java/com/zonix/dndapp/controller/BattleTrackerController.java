@@ -25,16 +25,14 @@ import java.util.Map;
 @RequestMapping("battle_tracker")
 public class BattleTrackerController {
     private final CombatantService combatantService;
-    private final CombatGroupService combatGroupService;
 
     private final TurnQueueService turnQueueService;
 
     private final SpringTemplateEngine templateEngine;
 
 
-    public BattleTrackerController(CombatantService combatantService, CombatGroupService combatGroupService, TurnQueueService turnQueueService, SpringTemplateEngine templateEngine) {
+    public BattleTrackerController(CombatantService combatantService, TurnQueueService turnQueueService, SpringTemplateEngine templateEngine) {
         this.combatantService = combatantService;
-        this.combatGroupService = combatGroupService;
         this.turnQueueService = turnQueueService;
         this.templateEngine = templateEngine;
     }

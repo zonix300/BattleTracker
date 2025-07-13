@@ -1,4 +1,9 @@
 package com.zonix.dndapp.dto.entity;
 
-public class UserSafeInfo {
+public record UserSafeInfo(
+        String id,
+        String username,
+        String email,
+        String role) {
+
 }

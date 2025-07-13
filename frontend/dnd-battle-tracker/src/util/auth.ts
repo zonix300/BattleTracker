@@ -1,21 +1,21 @@
 export const getAuthToken = (): string | null => {
   // Using sessionStorage (cleared when tab closes)
-  return sessionStorage.getItem('authToken');
+  return localStorage.getItem('token');
 };
 
 export const setAuthToken = (token: string): void => {
-  sessionStorage.setItem('authToken', token);
+  localStorage.setItem('token', token);
 };
 
 export const removeAuthToken = (): void => {
-  sessionStorage.removeItem('authToken');
+  localStorage.removeItem('token');
 };
 
 // Simple CSRF token (if your backend provides one)
 export const getCsrfToken = (): string | null => {
-  return sessionStorage.getItem('csrfToken');
+  return localStorage.getItem('csrfToken');
 };
 
 export const setCsrfToken = (token: string): void => {
-  sessionStorage.setItem('csrfToken', token);
+  localStorage.setItem('csrfToken', token);
 };

@@ -5,6 +5,7 @@ import com.zonix.dndapp.dto.request.HpUpdateRequest;
 import com.zonix.dndapp.dto.request.ItemRemovalRequest;
 import com.zonix.dndapp.dto.request.TemplateCreatureSearchRequest;
 import com.zonix.dndapp.entity.Combatant;
+import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.entity.TurnQueueItem;
 import com.zonix.dndapp.service.TemplateCreatureService;
 import com.zonix.dndapp.service.TurnQueueService;
@@ -64,7 +65,7 @@ public class CombatantController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/add/{templateId}")
+    @GetMapping("/{templateId}/add")
     public ResponseEntity<TurnQueueItem> add(@PathVariable Long templateId) {
         TurnQueueItem item = turnQueueService.addItem(templateId);
 
@@ -93,5 +94,11 @@ public class CombatantController {
         Integer newInitiative = request.get("initiative");
         combatant.setInitiative(newInitiative);
         return ResponseEntity.ok(combatant);
+    }
+
+    @GetMapping("{templateId}")
+    public ResponseEntity<TemplateCreature> get(@PathVariable Long templateId) {
+        TemplateCreature creature = templateCreatureService.findTemplateCreatureById(templateId);
+        return ResponseEntity.ok(creature);
     }
 }
