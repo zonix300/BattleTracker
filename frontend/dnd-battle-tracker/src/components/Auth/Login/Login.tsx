@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLoginSubmit } from "../../hooks/useLoginSubmit";
-import { Credentials } from "../type/Credentials";
+import { Credentials } from "../../type/Credentials";
+import { useLoginSubmit } from "../../../hooks/useLoginSubmit";
 
 export const Login = () => {
     const [credentials, setCredentials] = useState<Credentials>({
@@ -30,9 +30,7 @@ export const Login = () => {
         } catch (error) {
             console.error(error);
         }
-    }
-
-
+    };
 
     return (
         <form onSubmit={handleSubmit}>

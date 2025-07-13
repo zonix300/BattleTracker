@@ -1,43 +1,62 @@
 .search-input {
-    display: block;
-    width: 90%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    background-color: var(--accent-dark);
-    font-size: 1rem;
-    color: var(--text-light);
-    outline: none;
-    transition: border-color 0.2s ease;
+  display: flex;
+  width: 90%;
+  height: 2rem;
+  background-color: var(--bg-dark);
+  border-radius: 100px;
+  border: 1px solid var(--primary);
+  font-size: 14px;
+  color: var(--text-light);
+  padding-left: 10px;
 }
 
 .search-input::placeholder {
-    color: var(--highlight-muted);
+  font-size: 14px;
+  color: var(--highlight-muted);
 }
 
 .search-results {
-    padding: 1rem;
+  padding: 1rem;
+}
+
+.search-result-item-dot {
+  height: 1.5rem;
+  width: 1.5rem;
+  padding-right: 1rem;
 }
 
 .search-result-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem 0.25rem 1rem;
+  color: var(--text-body);
+  font-size: 16px;
+  border-radius: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.search-result-item span {
+  text-align: left;
+  width: 100%;
+}
+
+.search-result-item:hover {
+  background-color: #B59E9050;
+  border-radius: 16px;
+  color: var(--text-light);
+  font-weight: bold;
 }
 
 .add-combatant-button {
-    background-color: var(--accent-light);
-    color: var(--text-light);
-    padding: 0.3rem 0.6rem;
-    border-radius: 6px;
-    gap: 0.3rem;
-    border: 2px solid var(--border-light);
-    transition: background-color 0.2s ease;
+  background: none;
+  border: none;
+  transition: 0.2s ease;
 }
 
-.add-combatant-button:hover {
-    background-color: var(--highlight-soft);
+.add-combatant-button-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  fill: var(--text-light);
 }
 
 .pagination {
@@ -56,7 +75,7 @@
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .pagination button:hover:not(:disabled) {

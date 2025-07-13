@@ -1,0 +1,81 @@
+.combatants-container {
+  padding: 1rem;
+  border-radius: 1rem;
+  overflow-x: auto;
+}
+
+.combatants-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--accent-dark);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.combatants-table-header th {
+  background-color: var(--accent-light);
+  color: var(--text-light);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.combatants-table-body td {
+  color: var(--text-body);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.combatant-row {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.combatant-row:hover {
+  background-color: var(--accent-light);
+}
+
+.combatant-row.selected {
+  background-color: var(--highlight-muted);
+}
+
+.combatants-table input[type="number"] {
+  background-color: var(--accent-light);
+  color: var(--text-light);
+  border: 1px solid var(--border-light);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  width: 4rem;
+}
+
+.combatants-table input[type="number"]:disabled {
+  opacity: 0.5;
+}
+
+.combatants-table button {
+  background-color: var(--highlight-soft);
+  color: var(--text-light);
+  border: none;
+  margin-right: 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.combatants-table button:disabled {
+  background-color: var(--highlight-muted);
+  cursor: not-allowed;
+}
+
+.combatants-table button:hover:not(:disabled) {
+  background-color: var(--highlight-pale);
+}
+
+.settings-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #fff;
+}

@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import { Creature } from "../type/Creature";
 import { apiClient } from "../../services/api";
+import { useSearchCreature } from "../../hooks/useSeachCreature";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
@@ -12,25 +13,18 @@ export default function CreatureSheet({ templateCreatureId }: CreatureSheetProps
     
     const [creature, setCreature] = useState<Creature | null>(null);
 
+    const {
+        handleSelectedCreatureChange,
+        isSelectedCreatureChanging
+    } = useSearchCreature(templateCreatureId, setCreature);
+
 
     useEffect(() => {
-        const fetchCreature = async () => {
-            if (!templateCreatureId) {
-                setCreature(null);
-                return;
-            }
-            
-            try {
-                const response = await apiClient.get<Creature>(`${API_BASE_URL}/creatures/${templateCreatureId}`);
-                setCreature(response.data);
-            } catch (error) {
-                console.error("Error fetching creature:", error);
-                setCreature(null);
-            }
-        };
-
-            fetchCreature();    
-        }, [templateCreatureId]);
+        if (templateCreatureId) {
+            handleSelectedCreatureChange();
+        }
+        
+    }, [templateCreatureId]);
   
     
 

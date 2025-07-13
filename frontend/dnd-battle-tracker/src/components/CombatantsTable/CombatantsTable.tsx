@@ -1,6 +1,9 @@
 import React, {useState} from "react";
 import { Combatant } from "../type/Combatant";
 import { useCombatActions } from "../../hooks/useCombatActions";
+import { ReactComponent as SettingsIcon } from "../../icons/settings.svg";
+import "./CombatantsTable.css"
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
 
 export default function CombatantsTable({combatants, setCombatants, selectedCombatant, setSelectedCombatant} : {
@@ -56,6 +59,7 @@ export default function CombatantsTable({combatants, setCombatants, selectedComb
                 <td>{combatant.name}</td>
                 <td>{combatant.currentHp}/{combatant.maxHp}</td>
                 <td>{combatant.armorClass}</td>
+                <td><button><SettingsIcon className="settings-icon"/></button></td>
               </tr>
               ))}
         </tbody>

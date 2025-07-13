@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { useSecureApiCall } from "./useSecureApiCall"
 import { Combatant } from "../components/type/Combatant";
 import { Pagination } from "../components/type/Pagination";
+import { toast } from "react-toastify";
 
 export const useSearch = (
     setCombatants: React.Dispatch<React.SetStateAction<Combatant[]>>,
@@ -35,6 +36,9 @@ export const useSearch = (
                 onSuccess: ({ content, page } : {content: Combatant[], page: Pagination}) => {
                     setCombatants(content);
                     setPagination(page);
+                },
+                onError: (error) => {
+                    toast.error(error);
                 }
             }
         );

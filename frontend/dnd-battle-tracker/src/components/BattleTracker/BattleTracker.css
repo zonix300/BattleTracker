@@ -1,3 +1,31 @@
+:root {
+    --bg-dark: #181923;
+    --sidebar-bg: #292d41;
+    --accent-dark: #38405d;
+    --accent-light: #4c546d;
+    --highlight-muted: #6f687a;
+    --text-body: #bcbed4;
+    --text-light: #f3f0ec;
+    --highlight-pale: #a58d89;
+    --highlight-soft: #b59e90;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --alert-red-light: #b97474;
+    --alert-red: #9c4444;
+    --alert-red-dark: #7a3333;
+    --alert-green-light: #7aa885;
+    --alert-green: #385a45;
+    --alert-green-dark: #2b3c33;
+    --alert-gold-light: #cdbd7d;
+    --alert-gold: #b59d4d;
+    --alert-gold-dark: #8a7635;
+    --primary: #b38b56;
+    --secondary: #a48d89;
+}
+
+body {
+    background-color: var(--bg-dark);
+}
+
 #root {
     display: grid;
     grid-template-columns: 20vw 1fr 300px;
@@ -8,7 +36,7 @@
 .search-sidebar-container {
     padding: 1rem;
     overflow-y: auto;
-    background-color: var(--sidebar-bg);
+    background-color: #a48d8920;
 }
 
 .combatants-container {
@@ -19,5 +47,5 @@
 .creature-sheet-container {
     padding: 1rem;
     overflow-y: auto;
-    background-color: var(--accent-dark);
+    background-color: #a48d8920;
 }

@@ -57,7 +57,12 @@ export const useSecureApiCall = () => {
                 headers["Authorization"] = `Bearer ${token}`;
             }
 
-            const response = await apiClient[method](endpoint, data, {headers});
+            let response;
+            if (method === "get") {
+                response = await apiClient[method](endpoint, {headers});
+            } else {
+                response = await apiClient[method](endpoint, data, {headers});response = await apiClient[method](endpoint, data, {headers});
+            }
 
             if (onSuccess) {
                 onSuccess(response.data)

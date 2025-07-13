@@ -12,7 +12,7 @@ export const useAddCombatants = (
     const handleAddCombatant = useCallback(async (templateId: number | null) => {
         await makeApiCall(
             "get",
-            `/api/combatants/add/${templateId}`,
+            `/api/combatants/${templateId}/add`,
             {},
             {
                 showLoadingFor: `adding-combatant-by-${templateId}`,

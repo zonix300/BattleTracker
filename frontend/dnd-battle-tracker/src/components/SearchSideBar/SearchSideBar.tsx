@@ -5,6 +5,8 @@ import { Combatant } from "../type/Combatant";
 import { useSearch } from "../../hooks/useSearch";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAddCombatants } from "../../hooks/useAddCombatant";
+import { ReactComponent as PlusIcon } from "../../icons/plus.svg";
+import { ReactComponent as DotIcon } from "../../icons/dot.svg"
 
 export default function SearchSideBar({combatants, setCombatants}: {
   combatants: Combatant[];
@@ -73,7 +75,6 @@ export default function SearchSideBar({combatants, setCombatants}: {
 
   return (
     <aside className="search-sidebar-container">
-      <h3 className="sidebar-title">Search Creatures</h3>
       <input
         type="text"
         value={query}
@@ -84,13 +85,15 @@ export default function SearchSideBar({combatants, setCombatants}: {
       <ul className="search-results">
         {results.map((creature, idx) => (
           <li key={idx} className="search-result-item">
+            <DotIcon className="search-result-item-dot"/>
             <span className="search-result-item-name">{creature.name}</span>
             <button
               className="add-combatant-button"
               onClick={() => handleAddCombatant(creature.templateCreatureId)}
               disabled={isAdding(creature.templateCreatureId)}
             >
-              +
+              
+              <PlusIcon className="add-combatant-button-icon" />
             </button>
           </li>
         ))}
