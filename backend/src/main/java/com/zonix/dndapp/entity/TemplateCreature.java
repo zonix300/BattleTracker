@@ -3,6 +3,8 @@ package com.zonix.dndapp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.zonix.dndapp.util.DndUtils;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,7 +59,8 @@ public class TemplateCreature {
             joinColumns = @JoinColumn(name = "creature_id"),
             inverseJoinColumns = @JoinColumn(name = "action_id")
     )
-    private List<Action> actions = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Action> actions = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -65,7 +68,8 @@ public class TemplateCreature {
             joinColumns = @JoinColumn(name = "creature_id"),
             inverseJoinColumns = @JoinColumn(name = "bonus_action_id")
     )
-    private List<BonusAction> bonusActions = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<BonusAction> bonusActions = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -73,7 +77,8 @@ public class TemplateCreature {
             joinColumns = @JoinColumn(name = "creature_id"),
             inverseJoinColumns = @JoinColumn(name = "special_ability_id")
     )
-    private List<Ability> abilities = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Ability> abilities = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(
@@ -89,7 +94,8 @@ public class TemplateCreature {
             joinColumns = @JoinColumn(name = "creature_id"),
             inverseJoinColumns = @JoinColumn(name = "legendary_action_id")
     )
-    private List<LegendaryAction> legendaryActions = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<LegendaryAction> legendaryActions = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -97,15 +103,17 @@ public class TemplateCreature {
             joinColumns = @JoinColumn(name = "creature_id"),
             inverseJoinColumns = @JoinColumn(name = "reaction_id")
     )
-    private List<Reaction> reactions = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Reaction> reactions = new HashSet<>();
 
     @JsonIgnoreProperties("creature")
     @OneToMany(mappedBy = "creature", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CreatureSpeed> speeds = new ArrayList<>();
+    private Set<CreatureSpeed> speeds = new HashSet<>();
 
     @JsonIgnoreProperties("creature")
     @OneToMany(mappedBy = "creature", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CreatureSkills> skills = new ArrayList<>();
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<CreatureSkills> skills = new HashSet<>();
 
     @Column(name = "challenge_rating")
     private String challengeRating;
@@ -119,6 +127,61 @@ public class TemplateCreature {
     private String documentTitle;
 
     public TemplateCreature() {
+    }
+
+
+    @Override
+    public String toString() {
+        return "TemplateCreature{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", size='" + size + '\'' +
+                ", creatureType='" + creatureType + '\'' +
+                ", alignment='" + alignment + '\'' +
+                ", armorClass=" + armorClass +
+                ", armorDescription='" + armorDescription + '\'' +
+                ", hitPoints=" + hitPoints +
+                ", hitDice='" + hitDice + '\'' +
+                ", strength=" + strength +
+                ", dexterity=" + dexterity +
+                ", constitution=" + constitution +
+                ", intelligence=" + intelligence +
+                ", wisdom=" + wisdom +
+                ", charisma=" + charisma +
+                ", strengthSave=" + strengthSave +
+                ", dexteritySave=" + dexteritySave +
+                ", constitutionSave=" + constitutionSave +
+                ", intelligenceSave=" + intelligenceSave +
+                ", wisdomSave=" + wisdomSave +
+                ", charismaSave=" + charismaSave +
+                ", damageResistances='" + damageResistances + '\'' +
+                ", damageVulnerabilities='" + damageVulnerabilities + '\'' +
+                ", damageImmunities='" + damageImmunities + '\'' +
+                ", conditionImmunities='" + conditionImmunities + '\'' +
+                ", senses='" + senses + '\'' +
+                ", languages='" + languages + '\'' +
+                ", actions=" + actions +
+                ", bonusActions=" + bonusActions +
+                ", abilities=" + abilities +
+                ", environments=" + environments +
+                ", legendaryActions=" + legendaryActions +
+                ", reactions=" + reactions +
+                ", speeds=" + speeds +
+                ", skills=" + skills +
+                ", challengeRating='" + challengeRating + '\'' +
+                ", experiencePoints=" + experiencePoints +
+                ", description='" + description + '\'' +
+                ", legendaryDescription='" + legendaryDescription + '\'' +
+                ", documentTitle='" + documentTitle + '\'' +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -329,12 +392,68 @@ public class TemplateCreature {
         this.languages = languages;
     }
 
-    public List<Action> getActions() {
+    public Set<Action> getActions() {
         return actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public void setActions(Set<Action> actions) {
         this.actions = actions;
+    }
+
+    public Set<BonusAction> getBonusActions() {
+        return bonusActions;
+    }
+
+    public void setBonusActions(Set<BonusAction> bonusActions) {
+        this.bonusActions = bonusActions;
+    }
+
+    public Set<Ability> getAbilities() {
+        return abilities;
+    }
+
+    public void setAbilities(Set<Ability> abilities) {
+        this.abilities = abilities;
+    }
+
+    public Set<String> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(Set<String> environments) {
+        this.environments = environments;
+    }
+
+    public Set<LegendaryAction> getLegendaryActions() {
+        return legendaryActions;
+    }
+
+    public void setLegendaryActions(Set<LegendaryAction> legendaryActions) {
+        this.legendaryActions = legendaryActions;
+    }
+
+    public Set<Reaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(Set<Reaction> reactions) {
+        this.reactions = reactions;
+    }
+
+    public Set<CreatureSpeed> getSpeeds() {
+        return speeds;
+    }
+
+    public void setSpeeds(Set<CreatureSpeed> speeds) {
+        this.speeds = speeds;
+    }
+
+    public Set<CreatureSkills> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(Set<CreatureSkills> skills) {
+        this.skills = skills;
     }
 
     public String getChallengeRating() {
@@ -365,8 +484,8 @@ public class TemplateCreature {
         return legendaryDescription;
     }
 
-    public void setLegendaryDescription(String legendaryDescriptions) {
-        this.legendaryDescription = legendaryDescriptions;
+    public void setLegendaryDescription(String legendaryDescription) {
+        this.legendaryDescription = legendaryDescription;
     }
 
     public String getDocumentTitle() {
@@ -375,116 +494,5 @@ public class TemplateCreature {
 
     public void setDocumentTitle(String documentTitle) {
         this.documentTitle = documentTitle;
-    }
-
-    public List<BonusAction> getBonusActions() {
-        return bonusActions;
-    }
-
-    public void setBonusActions(List<BonusAction> bonusActions) {
-        this.bonusActions = bonusActions;
-    }
-
-    public List<Ability> getAbilities() {
-        return abilities;
-    }
-
-    public void setAbilities(List<Ability> abilities) {
-        this.abilities = abilities;
-    }
-
-    public Set<String> getEnvironments() {
-        return environments;
-    }
-
-    public void setEnvironments(Set<String> environments) {
-        this.environments = environments;
-    }
-
-    public List<LegendaryAction> getLegendaryActions() {
-        return legendaryActions;
-    }
-
-    public void setLegendaryActions(List<LegendaryAction> legendaryActions) {
-        this.legendaryActions = legendaryActions;
-    }
-
-    public List<Reaction> getReactions() {
-        return reactions;
-    }
-
-    public void setReactions(List<Reaction> reactions) {
-        this.reactions = reactions;
-    }
-
-    public List<CreatureSpeed> getSpeeds() {
-        return speeds;
-    }
-
-    public void setSpeeds(List<CreatureSpeed> speeds) {
-        this.speeds = speeds;
-    }
-
-    public List<CreatureSkills> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<CreatureSkills> skills) {
-        this.skills = skills;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-    @Override
-    public String toString() {
-        return "TemplateCreature{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", size='" + size + '\'' +
-                ", creatureType='" + creatureType + '\'' +
-                ", alignment='" + alignment + '\'' +
-                ", armorClass=" + armorClass +
-                ", armorDescription='" + armorDescription + '\'' +
-                ", hitPoints=" + hitPoints +
-                ", hitDice='" + hitDice + '\'' +
-                ", strength=" + strength +
-                ", dexterity=" + dexterity +
-                ", constitution=" + constitution +
-                ", intelligence=" + intelligence +
-                ", wisdom=" + wisdom +
-                ", charisma=" + charisma +
-                ", strengthSave=" + strengthSave +
-                ", dexteritySave=" + dexteritySave +
-                ", constitutionSave=" + constitutionSave +
-                ", intelligenceSave=" + intelligenceSave +
-                ", wisdomSave=" + wisdomSave +
-                ", charismaSave=" + charismaSave +
-                ", damageResistances='" + damageResistances + '\'' +
-                ", damageVulnerabilities='" + damageVulnerabilities + '\'' +
-                ", damageImmunities='" + damageImmunities + '\'' +
-                ", conditionImmunities='" + conditionImmunities + '\'' +
-                ", senses='" + senses + '\'' +
-                ", languages='" + languages + '\'' +
-                ", actions=" + actions +
-                ", bonusActions=" + bonusActions +
-                ", abilities=" + abilities +
-                ", environments=" + environments +
-                ", legendaryActions=" + legendaryActions +
-                ", reactions=" + reactions +
-                ", speeds=" + speeds +
-                ", skills=" + skills +
-                ", challengeRating='" + challengeRating + '\'' +
-                ", experiencePoints=" + experiencePoints +
-                ", description='" + description + '\'' +
-                ", legendaryDescription='" + legendaryDescription + '\'' +
-                ", documentTitle='" + documentTitle + '\'' +
-                '}';
     }
 }

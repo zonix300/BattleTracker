@@ -21,6 +21,7 @@ export const useLoginSubmit = () => {
                 onSuccess: (data) => {
                     localStorage.setItem("token", data.token);
                     localStorage.setItem("user", JSON.stringify(data.userInfo));
+                    navigate("/battle-tracker");
                 },
                 onError: (error) => {
                     console.error("Login failed: ", error);

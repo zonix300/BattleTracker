@@ -1,7 +1,7 @@
 import React from 'react';
 import CreateCreatureForm from './components/CreatureForm/CreatureForm';
 import BattleTracker from './components/BattleTracker/BattleTracker';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute'
 import { Register } from './components/Auth/Register/Register'
 import { ToastContainer } from 'react-toastify';
@@ -11,6 +11,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace={true} /> } />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         

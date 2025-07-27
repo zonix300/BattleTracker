@@ -28,7 +28,7 @@ body {
 
 #root {
     display: grid;
-    grid-template-columns: 20vw 1fr 300px;
+    grid-template-columns: 20vw 1fr 20vw;
     height: 100vh;
     color: var(--text-light);
 }

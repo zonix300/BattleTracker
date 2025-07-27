@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class TemplateCreatureMapper {
@@ -55,7 +57,7 @@ public class TemplateCreatureMapper {
             }
         }
 
-        List<CreatureSkills> creatureSkills = request.skills().stream()
+        Set<CreatureSkills> creatureSkills = request.skills().stream()
                 .map(e -> {
                     CreatureSkills creatureSkill = new CreatureSkills();
 
@@ -66,7 +68,7 @@ public class TemplateCreatureMapper {
 
                     return creatureSkill;
                 })
-                .toList();
+                .collect(Collectors.toSet());
         templateCreature.setSkills(creatureSkills);
 
         templateCreature.setDamageResistances(request.damageResistances());
@@ -78,37 +80,37 @@ public class TemplateCreatureMapper {
         templateCreature.setLanguages(request.languages());
 
 
-        List<Action> actions = ActionMapperHelper.mapActionMap(
+        Set<Action> actions = ActionMapperHelper.mapActionMap(
                 request.actions(),
                 Action::new
         );
         templateCreature.setActions(actions);
 
-        List<BonusAction> bonusActions = ActionMapperHelper.mapActionMap(
+        Set<BonusAction> bonusActions = ActionMapperHelper.mapActionMap(
                 request.bonusActions(),
                 BonusAction::new
         );
         templateCreature.setBonusActions(bonusActions);
 
-        List<Ability> abilities = ActionMapperHelper.mapActionMap(
+        Set<Ability> abilities = ActionMapperHelper.mapActionMap(
                 request.abilities(),
                 Ability::new
         );
         templateCreature.setAbilities(abilities);
 
-        List<LegendaryAction> legendaryActions = ActionMapperHelper.mapActionMap(
+        Set<LegendaryAction> legendaryActions = ActionMapperHelper.mapActionMap(
                 request.legendaryActions(),
                 LegendaryAction::new
         );
         templateCreature.setLegendaryActions(legendaryActions);
 
-        List<Reaction> reactions = ActionMapperHelper.mapActionMap(
+        Set<Reaction> reactions = ActionMapperHelper.mapActionMap(
                 request.reactions(),
                 Reaction::new
         );
         templateCreature.setReactions(reactions);
 
-        List<CreatureSpeed> speeds = request.speeds().entrySet().stream()
+        Set<CreatureSpeed> speeds = request.speeds().entrySet().stream()
                 .map(e -> {
                     CreatureSpeed speed = new CreatureSpeed();
 
@@ -122,7 +124,7 @@ public class TemplateCreatureMapper {
 
                     return speed;
                 })
-                .toList();
+                .collect(Collectors.toSet());
         templateCreature.setSpeeds(speeds);
 
         templateCreature.setDescription(request.description());

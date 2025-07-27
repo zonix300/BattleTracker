@@ -4,13 +4,14 @@ import "./SearchSideBar.css";
 import { Combatant } from "../type/Combatant";
 import { useSearch } from "../../hooks/useSearch";
 import { useDebounce } from "../../hooks/useDebounce";
-import { useAddCombatants } from "../../hooks/useAddCombatant";
+import { useAddCombatant } from "../../hooks/useAddCombatant";
 import { ReactComponent as PlusIcon } from "../../icons/plus.svg";
 import { ReactComponent as DotIcon } from "../../icons/dot.svg"
+import { Combat } from "../type/Combat";
 
-export default function SearchSideBar({combatants, setCombatants}: {
-  combatants: Combatant[];
-  setCombatants: React.Dispatch<React.SetStateAction<Combatant[]>>;
+export default function SearchSideBar({combat, setCombat}: {
+  combat: Combat | undefined;
+  setCombat: React.Dispatch<React.SetStateAction<Combat | undefined>>;
 }) {
   
   const [results, setResults] = useState<Combatant[]>([]);
@@ -33,7 +34,7 @@ export default function SearchSideBar({combatants, setCombatants}: {
   const {
     handleAddCombatant,
     isAdding
-  } = useAddCombatants(combatants, setCombatants);
+  } = useAddCombatant(combat, setCombat);
 
   useEffect(() => {
     if (debouncedQuery.trim()) {

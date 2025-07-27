@@ -3,9 +3,7 @@ package com.zonix.dndapp.controller;
 import com.zonix.dndapp.dto.request.TemplateCreatureCreationRequest;
 import com.zonix.dndapp.entity.*;
 import com.zonix.dndapp.service.TemplateCreatureService;
-import com.zonix.dndapp.service.TurnQueueService;
 import jakarta.validation.Valid;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,12 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/creatures")
 public class CreatureController {
-    private final TurnQueueService turnQueueService;
     private final TemplateCreatureService templateCreatureService;
 
-    public CreatureController(TemplateCreatureService templateCreatureService, TurnQueueService turnQueueService) {
+    public CreatureController(TemplateCreatureService templateCreatureService) {
         this.templateCreatureService = templateCreatureService;
-        this.turnQueueService = turnQueueService;
     }
 
     @PostMapping("/create")

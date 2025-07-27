@@ -34,7 +34,7 @@ public class Combatant implements TurnQueueItem {
         this.currentHp = this.maxHp;
         this.armorClass = armorClass;
         this.dexterity = dexterity;
-        this.initiative = DndUtils.roll(20) + DndUtils.calculateModifier(dexterity);
+        this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
         this.templateCreatureId = id;
     }
 
@@ -43,11 +43,10 @@ public class Combatant implements TurnQueueItem {
         this.name = templateCreature.getName();
         this.hitDice = templateCreature.getHitDice();
         this.maxHp = DndUtils.roll(hitDice);
-
     }
 
     public void rerollInitiative() {
-        this.initiative = DndUtils.roll(20) + DndUtils.calculateModifier(initiative);
+        this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
     }
 
     @Override
@@ -87,7 +86,7 @@ public class Combatant implements TurnQueueItem {
     }
 
     public void setCurrentHp(Integer currentHp) {
-        this.currentHp = currentHp;
+        this.currentHp = Math.min(maxHp, currentHp);
     }
 
     public Integer getMaxHp() {

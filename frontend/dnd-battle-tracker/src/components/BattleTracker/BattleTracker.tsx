@@ -4,9 +4,10 @@ import CombatantsTable from "../CombatantsTable/CombatantsTable";
 import CreatureSheet from "../CreatureSheet/CreatureSheet";
 import { Combatant } from "../type/Combatant";
 import "./BattleTracker.css"
+import { Combat } from "../type/Combat";
 
 export default function BattleTracker() {
-    const [combatants, setCombatants] = useState<Combatant[]>([]);
+    const [combat, setCombat] = useState<Combat | undefined>();
     const [selectedCombatant, setSelectedCombatant] = useState<Combatant | null>(null);
 
     const templateCreatureId = selectedCombatant?.templateCreatureId ?? null;
@@ -14,12 +15,12 @@ export default function BattleTracker() {
     return (
         <>
             <SearchSideBar 
-                combatants={combatants} 
-                setCombatants={setCombatants} 
+                combat={combat} 
+                setCombat={setCombat} 
             />
             <CombatantsTable 
-                combatants={combatants} 
-                setCombatants={setCombatants}
+                combat={combat} 
+                setCombat={setCombat}
                 selectedCombatant={selectedCombatant}
                 setSelectedCombatant={setSelectedCombatant}
             />

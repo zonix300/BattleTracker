@@ -54,7 +54,7 @@ export type Creature = {
   damageVulnerabilities: string[];
   damageImmunities: string[];
   conditionImmunities: string[];
-  senses: { name: string; value: string }[];
+  senses: string;
   languages: string[];
   challengeRating: string;
   strength: number;

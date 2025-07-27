@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { Combatant } from "../components/type/Combatant";
 import { useSecureApiCall } from "./useSecureApiCall";
+import { Combat } from "../components/type/Combat";
 
-export const useAddCombatants = (
-    combatants: Combatant[],
-    setCombatants: React.Dispatch<React.SetStateAction<Combatant[]>>
+export const useAddCombatant = (
+    combat: Combat | undefined,
+    setCombat: React.Dispatch<React.SetStateAction<Combat | undefined>>
 ) => {
 
     const {makeApiCall, isLoading} = useSecureApiCall();
@@ -19,12 +20,12 @@ export const useAddCombatants = (
                 validateInput: (data) => {
                     return typeof templateId === "number" && templateId > 0;
                 },
-                onSuccess: ((combatant : Combatant) => {
-                    setCombatants(prev => [...prev, combatant]);
+                onSuccess: ((combat : Combat) => {
+                    setCombat(combat);
                 })
             }
         );
-    }, [makeApiCall, setCombatants]);
+    }, []);
 
     return {
         handleAddCombatant,

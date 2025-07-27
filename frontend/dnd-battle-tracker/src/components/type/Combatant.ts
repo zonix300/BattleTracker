@@ -4,11 +4,11 @@ export type Combatant = {
   maxHp: number;
   currentHp: number;
   hitDice: string;
-  armorClass: number;
+  armorClass: string;
   dexterity: number;
   initiative: number;
   groupId: number | null;
-  statusEffects: string[]; // or another type if it's more complex
+  statusEffects: string[];
   templateCreatureId: number | null;
   combatantType: string;
   type: string;
