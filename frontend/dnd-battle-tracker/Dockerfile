@@ -7,22 +7,19 @@ RUN npm run build
 
 FROM nginx:alpine
 RUN apk add --no-cache gettext
+
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Create startup script
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'cat > /etc/nginx/conf.d/default.conf << EOF' >> /start.sh && \
-    echo 'server {' >> /start.sh && \
-    echo '    listen $PORT;' >> /start.sh && \
-    echo '    server_name _;' >> /start.sh && \
-    echo '    root /usr/share/nginx/html;' >> /start.sh && \
-    echo '    index index.html;' >> /start.sh && \
-    echo '    location / {' >> /start.sh && \
-    echo '        try_files $uri $uri/ /index.html;' >> /start.sh && \
-    echo '    }' >> /start.sh && \
-    echo '}' >> /start.sh && \
-    echo 'EOF' >> /start.sh && \
-    echo 'nginx -g "daemon off;"' >> /start.sh && \
-    chmod +x /start.sh
+RUN rm /etc/nginx/conf.d/default.conf
 
-CMD ["/start.sh"]
+RUN echo 'server {' > /etc/nginx/conf.d/default.conf.template && \
+    echo '    listen ${PORT};' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '    server_name _;' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '    root /usr/share/nginx/html;' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '    index index.html;' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '    location / {' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '        try_files $uri $uri/ /index.html;' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '    }' >> /etc/nginx/conf.d/default.conf.template && \
+    echo '}' >> /etc/nginx/conf.d/default.conf.template
+
+CMD envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
