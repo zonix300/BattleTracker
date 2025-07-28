@@ -13,7 +13,7 @@ COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-CMD envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+CMD envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
     echo "=== PORT is: $PORT ===" && \
     echo "=== Final nginx config ===" && \
     cat /etc/nginx/conf.d/default.conf && \
