@@ -1,6 +1,9 @@
 package com.zonix.dndapp.entity;
 
+import com.zonix.dndapp.entity.playerCharacter.PlayerCharacter;
 import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "user_combatants")
@@ -26,8 +29,19 @@ public class UserCombatant {
     private TemplateCreature templateCreature;
 
     @ManyToOne
+    @JoinColumn(name = "player_character_id")
+    private PlayerCharacter playerCharacter;
+
+    @ManyToOne
     @JoinColumn(name = "battle_id")
     private Battle battle;
+
+    @ElementCollection(targetClass = StatusEffect.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_combatant_status_effects",
+            joinColumns = @JoinColumn(name = "user_combatant_id"))
+    @Column(name = "status_effect")
+    private Set<StatusEffect> effects;
 
     public UserCombatant() {
 
@@ -121,5 +135,21 @@ public class UserCombatant {
 
     public void setBattle(Battle battle) {
         this.battle = battle;
+    }
+
+    public Set<StatusEffect> getEffects() {
+        return effects;
+    }
+
+    public void setEffects(Set<StatusEffect> effects) {
+        this.effects = effects;
+    }
+
+    public PlayerCharacter getPlayerCharacter() {
+        return playerCharacter;
+    }
+
+    public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+        this.playerCharacter = playerCharacter;
     }
 }

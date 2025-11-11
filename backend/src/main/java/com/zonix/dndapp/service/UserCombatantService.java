@@ -1,21 +1,25 @@
 package com.zonix.dndapp.service;
 
 import com.zonix.dndapp.component.UserCombatantFactory;
+import com.zonix.dndapp.dto.entity.AuthContext;
 import com.zonix.dndapp.dto.entity.UserCombatantDTO;
 import com.zonix.dndapp.dto.request.CombatantUpdateRequest;
 import com.zonix.dndapp.dto.response.BattleResponse;
+import com.zonix.dndapp.dto.response.sheet.CreatureResponse;
 import com.zonix.dndapp.entity.*;
-import com.zonix.dndapp.repository.BattleRepository;
-import com.zonix.dndapp.repository.TemplateCreatureRepository;
-import com.zonix.dndapp.repository.UserCombatantRepository;
-import com.zonix.dndapp.repository.UserRepository;
+import com.zonix.dndapp.entity.playerCharacter.PlayerCharacter;
+import com.zonix.dndapp.mapper.PlayerCharacterMapper;
+import com.zonix.dndapp.mapper.TemplateCreatureMapper;
+import com.zonix.dndapp.repository.*;
 import com.zonix.dndapp.util.DndUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -23,17 +27,17 @@ public class UserCombatantService {
 
     private static final Logger log = LoggerFactory.getLogger(UserCombatantService.class);
     private final TemplateCreatureRepository templateCreatureRepository;
-    private final UserRepository userRepository;
     private final UserCombatantRepository userCombatantRepository;
     private final BattleService battleService;
-    private final BattleRepository battleRepository;
+    private final UserService userService;
+    private final PlayerCharacterRepository playerCharacterRepository;
 
-    public UserCombatantService(TemplateCreatureRepository templateCreatureRepository, UserRepository userRepository, UserCombatantRepository userCombatantRepository, BattleService battleService, BattleRepository battleRepository) {
+    public UserCombatantService(TemplateCreatureRepository templateCreatureRepository, UserCombatantRepository userCombatantRepository, BattleService battleService, UserService userService, PlayerCharacterRepository playerCharacterRepository) {
         this.templateCreatureRepository = templateCreatureRepository;
-        this.userRepository = userRepository;
         this.userCombatantRepository = userCombatantRepository;
         this.battleService = battleService;
-        this.battleRepository = battleRepository;
+        this.userService = userService;
+        this.playerCharacterRepository = playerCharacterRepository;
     }
 
     public Set<UserCombatantDTO> getUserCombatants(String email) {
@@ -46,14 +50,14 @@ public class UserCombatantService {
         return combatantDTOs;
     }
 
-    public BattleResponse addCombatant(Long templateId, Optional<Long> battleId, String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+    public Optional<UserCombatant> findByIdAndOwner(Long userCombatantId, User owner) {
+        return userCombatantRepository.findByIdAndOwner(userCombatantId, owner);
+    }
 
-        if (userOptional.isEmpty()) {
-            return null;
-        }
+    public BattleResponse addCombatant(Long templateId, Optional<Long> battleId, AuthContext authContext) {
+        User user = userService.findUser(authContext);
 
-        Battle battle = battleService.validateBattle(battleId, userOptional.get());
+        Battle battle = battleService.validateBattle(battleId, user);
 
         Optional<TemplateCreature> templateCreatureOptional = templateCreatureRepository.findTemplateCreatureById(templateId);
 
@@ -61,7 +65,7 @@ public class UserCombatantService {
             return null;
         }
 
-        UserCombatant userCombatant = UserCombatantFactory.fromTemplateWithHitDice(templateCreatureOptional.get(), userOptional.get());
+        UserCombatant userCombatant = UserCombatantFactory.fromTemplateWithHitDice(templateCreatureOptional.get(), user);
         battleService.addUserCombatant(userCombatant, battle);
 
         if (battle.getCurrent() == null) {
@@ -73,14 +77,32 @@ public class UserCombatantService {
         return new BattleResponse(battle);
     }
 
-    public BattleResponse deleteCombatant(Long combatantId, String email) {
-        Optional<User> ownerOptional = userRepository.findByEmail(email);
+    public BattleResponse addPlayerCharacter(Long characterId, Optional<Long> battleId, AuthContext authContext) {
+        User user = userService.findUser(authContext);
 
-        if (ownerOptional.isEmpty()) {
+        Battle battle = battleService.validateBattle(battleId, user);
+
+        Optional<PlayerCharacter> playerCharacter = playerCharacterRepository.findById(characterId);
+
+        if (playerCharacter.isEmpty()) {
             return null;
         }
 
-        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.getByIdAndOwner(combatantId, ownerOptional.get());
+        UserCombatant userCombatant = UserCombatantFactory.fromPlayerCharacterWithHitPoints(playerCharacter.get(), user);
+        battleService.addUserCombatant(userCombatant, battle);
+
+        if (battle.getCurrent() == null) {
+            battleService.validateCurrent(battle);
+        }
+
+        battleService.sortUserCombatants(battle);
+
+        return new BattleResponse(battle);
+    }
+    public BattleResponse deleteCombatant(Long combatantId, AuthContext authContext) {
+        User owner = userService.findUser(authContext);
+
+        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.getByIdAndOwner(combatantId, owner);
 
         if (userCombatantOptional.isEmpty()) {
             return null;
@@ -88,7 +110,7 @@ public class UserCombatantService {
 
         Battle battle = userCombatantOptional.get().getBattle();
 
-        userCombatantRepository.deleteByIdAndOwner(combatantId, ownerOptional.get());
+        userCombatantRepository.deleteByIdAndOwner(combatantId, owner);
 
         battle.getUserCombatants().removeIf(uc -> uc.getId().equals(combatantId));
         if (battle.getCurrent() != null && battle.getCurrent().getId().equals(combatantId)) {
@@ -100,14 +122,10 @@ public class UserCombatantService {
         return new BattleResponse(battle);
     }
 
-    public BattleResponse updateCombatant(Long combatantId, CombatantUpdateRequest request, String email) {
-        Optional<User> ownerOptional = userRepository.findByEmail(email);
+    public BattleResponse updateCombatant(Long combatantId, CombatantUpdateRequest request, AuthContext authContext) {
+        User owner = userService.findUser(authContext);
 
-        if (ownerOptional.isEmpty()) {
-            return null;
-        }
-
-        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.findByIdAndOwner(combatantId, ownerOptional.get());
+        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.findByIdAndOwner(combatantId, owner);
 
         if (userCombatantOptional.isEmpty()) {
             return null;
@@ -130,14 +148,10 @@ public class UserCombatantService {
         return new BattleResponse(battle);
     }
 
-    public UserCombatantDTO rollInitiative(Long combatantId, String email) {
-        Optional<User> ownerOptional = userRepository.findByEmail(email);
+    public UserCombatantDTO rollInitiative(Long combatantId, AuthContext authContext) {
+        User owner = userService.findUser(authContext);
 
-        if (ownerOptional.isEmpty()) {
-            return null;
-        }
-
-        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.findByIdAndOwner(combatantId, ownerOptional.get());
+        Optional<UserCombatant> userCombatantOptional = userCombatantRepository.findByIdAndOwner(combatantId, owner);
 
         if (userCombatantOptional.isEmpty()) {
             return null;
@@ -150,6 +164,22 @@ public class UserCombatantService {
         userCombatantRepository.save(uc);
 
         return new UserCombatantDTO(uc);
+    }
+
+    public CreatureResponse getCreatureResponseFromCombatantId(long id) {
+        Optional<UserCombatant> uc = userCombatantRepository.findById(id);
+
+        if (uc.isEmpty()) return null;
+
+        CreatureResponse r = null;
+        if (uc.get().getPlayerCharacter() != null) {
+            r = PlayerCharacterMapper.fromUserCombatant(uc.get());
+        } else if (uc.get().getTemplateCreature() != null) {
+            r = TemplateCreatureMapper.fromUserCombatant(uc.get());
+        }
+
+        return r;
+
     }
 
 

@@ -1,9 +1,10 @@
 package com.zonix.dndapp.dto.request;
 
 
+import jakarta.validation.constraints.NotNull;
+
 public record LoginRequest(
-        String username,
-        String email,
-        String password
+        @NotNull String identifier,
+        @NotNull String password
 ) {
 }

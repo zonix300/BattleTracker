@@ -1,15 +1,15 @@
 package com.zonix.dndapp.mapper;
 
 import com.zonix.dndapp.dto.request.TemplateCreatureCreationRequest;
+import com.zonix.dndapp.dto.response.sheet.PlayerCharacterResponse;
+import com.zonix.dndapp.dto.response.sheet.TemplateCreatureResponse;
 import com.zonix.dndapp.entity.*;
 import com.zonix.dndapp.util.ActionMapperHelper;
 import com.zonix.dndapp.util.DndUtils;
 import com.zonix.dndapp.util.Skill;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -133,6 +133,106 @@ public class TemplateCreatureMapper {
         return templateCreature;
 
     }
+
+    public static TemplateCreatureResponse fromUserCombatant(UserCombatant uc) {
+        if (uc.getTemplateCreature() == null) return null;
+        TemplateCreature tc = uc.getTemplateCreature();
+        TemplateCreatureResponse r = new TemplateCreatureResponse();
+        r.setId(uc.getTemplateCreature().getId());
+        r.setName(uc.getName());
+        r.setCreatureType(tc.getCreatureType());
+        r.setChallengeRating(tc.getChallengeRating());
+        r.setDescription(tc.getDescription());
+        r.setHitDice(tc.getHitDice());
+        r.setArmorClass(uc.getArmorClass());
+        r.setMaxHp(uc.getMaxHp());
+        r.setCurrentHp(uc.getCurrentHp());
+        r.setAbilities(
+                Map.of(
+                    "strength", tc.getStrength(),
+                    "dexterity", tc.getDexterity(),
+                    "constitution", tc.getConstitution(),
+                    "intelligence", tc.getIntelligence(),
+                    "wisdom", tc.getWisdom(),
+                    "charisma", tc.getCharisma()
+                )
+        );
+
+        Set<String> skills = new HashSet<>();
+        for (CreatureSkills skill : tc.getSkills()) {
+            skills.add(skill.getName().toLowerCase());
+        }
+        r.setSkills(skills);
+
+        Map<String, String> actions = new HashMap<>();
+        for (Action action : tc.getActions()) {
+            actions.put(action.getName(), action.getDescription());
+        }
+        r.setActions(Map.of("action", actions));
+        r.setAlignment(tc.getAlignment());
+        r.setSize(tc.getSize());
+        Map<String, Integer> speeds = new HashMap<>();
+        for (CreatureSpeed speed : tc.getSpeeds()) {
+            speeds.put(speed.getName(), speed.getValue());
+        }
+        r.setSpeeds(speeds);
+
+        r.setSavingThrows(getSaves(tc));
+
+        r.setLanguages(tc.getLanguages());
+        r.setActions(getActions(tc));
+        r.setLegendaryDescription(tc.getLegendaryDescription());
+        r.setPassivePerception(10 + DndUtils.calculateModifier(tc.getDexterity()));
+
+        r.setDamageImmunities(tc.getDamageImmunities());
+        r.setDamageResistances(tc.getDamageResistances());
+        r.setDamageVulnerabilities(tc.getDamageVulnerabilities());
+        r.setConditionImmunities(tc.getConditionImmunities());
+        r.setSenses(tc.getSenses());
+        Map<String, String> specialAbilities = new HashMap<>();
+
+        for (Ability ability : tc.getAbilities()) {
+            specialAbilities.put(ability.getName(), ability.getDescription());
+        }
+        r.setSpecialAbilities(specialAbilities);
+
+
+        r.setType(TurnItemType.TEMPLATE_CREATURE);
+        return r;
+    }
+
+    private static Map<String, Integer> getSaves(TemplateCreature tc) {
+        Map<String, Integer> saves = new HashMap<>();
+        if (tc.getStrengthSave() != null) saves.put("strength", tc.getStrengthSave());
+        if (tc.getDexteritySave() != null) saves.put("dexterity", tc.getDexteritySave());
+        if (tc.getConstitutionSave() != null) saves.put("constitution", tc.getConstitutionSave());
+        if (tc.getIntelligenceSave() != null) saves.put("intelligence", tc.getIntelligenceSave());
+        if (tc.getWisdomSave() != null) saves.put("wisdom", tc.getWisdomSave());
+        if (tc.getCharismaSave() != null) saves.put("charisma", tc.getCharismaSave());
+        return saves;
+    }
+
+    private static Map<String, Map<String, String>> getActions(TemplateCreature tc) {
+        Map<String, Map<String, String>> actions = new HashMap<>();
+        Map<String, String> fullActions = new HashMap<>();
+        for (Action action : tc.getActions()) {
+            fullActions.put(action.getName(), action.getDescription());
+        }
+        Map<String, String> bonusActions = new HashMap<>();
+        for (BonusAction action : tc.getBonusActions()) {
+            bonusActions.put(action.getName(), action.getDescription());
+        }
+        Map<String, String> legendaryActions = new HashMap<>();
+        for (LegendaryAction action : tc.getLegendaryActions()) {
+            legendaryActions.put(action.getName(), action.getDescription());
+        }
+        
+        actions.put("legendary_action", legendaryActions);
+        actions.put("bonus_action", bonusActions);
+        actions.put("action", fullActions);
+        return actions;
+    }
+
 
 
 }

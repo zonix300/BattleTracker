@@ -1,0 +1,97 @@
+/* === LobbyInfoSideBar.css === */
+
+.lobby-info-side-bar__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #1a1924;
+  color: #e5e5e5;
+  padding: 1rem;
+  border-right: 1px solid #2c2b3a;
+  box-sizing: border-box;
+  border-radius: 0 8px 8px 0;
+  overflow: hidden;
+}
+
+/* Header */
+.lobby-info-side-bar__header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2c2b3a;
+}
+
+.lobby-info-side-bar__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f4f4f8;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Body */
+.lobby-info-side-bar__body {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.lobby-info-side-bar__players-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lobby-info-side-bar__player-item {
+  background-color: #222132;
+  border: 1px solid #2f2f43;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.lobby-info-side-bar__player-item:hover {
+  background-color: #2c2b3a;
+}
+
+.lobby-info-side-bar__player-item span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.lobby-info-side-bar__footer {
+  border-top: 1px solid #2c2b3a;
+  padding-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+}
+
+.lobby-info-side-bar__controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.lobby-info-side-bar__leave {
+  background-color: #4c2a2a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  width: 100%;
+  max-width: 200px;
+}
+
+.lobby-info-side-bar__leave:hover {
+  background-color: #6b3434;
+}
+
+.lobby-info-side-bar__leave:active {
+  transform: scale(0.97);
+}

@@ -27,7 +27,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
@@ -45,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7); //remove "Bearer "
         email = jwtService.extractEmail(jwt);
 
-        if (email != null || SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {

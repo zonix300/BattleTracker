@@ -1,0 +1,76 @@
+:root {
+    --bg-dark: #12111a;
+    --bg-light: #252236;
+    --accent-dark: #130a2c;
+    --accent-light: #3e4472;
+    --text-body: #a8b3bb;
+    --text-light: #eef7ff;
+    --highlight-muted: #464254;
+    --highlight-pale: #aba1cf;
+    --highlight-soft: #9d82ff;
+    --highlight-strong: #6d45fb;
+    --border-glow: rgba(139, 108, 251, 0.3);
+    --alert-red-light: #b97474;
+    --alert-red: #9c4444;
+    --alert-red-dark: #7a3333;
+    --alert-green-light: #7aa885;
+    --alert-green: #385a45;
+    --alert-green-dark: #2b3c33;
+    --alert-gold-light: #cdbd7d;
+    --alert-gold: #b59d4d;
+    --alert-gold-dark: #8a7635;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: var(--bg-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.App-layout {
+  display: grid;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.App-layout.sidebar-open .app__main-content {
+  padding-left: 380px;
+}
+
+.app__main-content {
+  padding-left: 80px;
+  background-color: var(--bg-dark);
+  height: 100%;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

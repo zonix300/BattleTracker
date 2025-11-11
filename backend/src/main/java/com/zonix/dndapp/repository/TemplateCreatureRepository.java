@@ -1,7 +1,9 @@
 package com.zonix.dndapp.repository;
 
+import com.zonix.dndapp.dto.entity.combatant.TemplateCombatantDTO;
 import com.zonix.dndapp.entity.Combatant;
 import com.zonix.dndapp.entity.TemplateCreature;
+import com.zonix.dndapp.entity.TurnQueueItem;
 import com.zonix.dndapp.entity.UserCombatant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,17 +21,17 @@ public interface TemplateCreatureRepository extends JpaRepository<TemplateCreatu
     Optional<TemplateCreature> findTemplateCreatureById(@Param("id") Long id);
 
     @Query("""
-        select new com.zonix.dndapp.entity.Combatant(
-        t.id,
-        t.name,
-        t.hitDice,
-        t.armorClass,
-        t.dexterity
-        ) 
+        select new com.zonix.dndapp.dto.entity.combatant.TemplateCombatantDTO(
+            t.id,
+            t.name,
+            t.hitDice,
+            t.armorClass,
+            t.dexterity
+        )
         from TemplateCreature t
         where lower(t.name) like lower(concat('%', :name, '%')) and lower(t.documentTitle) = '5e core rules'
     """)
-    Page<Combatant> findByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
+    Page<TurnQueueItem> findByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
 
     @EntityGraph(attributePaths = {
             "actions",

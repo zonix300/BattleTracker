@@ -1,15 +1,14 @@
 package com.zonix.dndapp.entity;
 
 
+import com.zonix.dndapp.entity.playerCharacter.PlayerCharacter;
 import com.zonix.dndapp.service.IdGeneratorService;
 import com.zonix.dndapp.util.DndUtils;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Combatant implements TurnQueueItem {
-    private Long id;
+    private long id;
     private String name;
     private Integer maxHp;
     private Integer currentHp;
@@ -20,18 +19,30 @@ public class Combatant implements TurnQueueItem {
     private Long groupId = null;
     private Set<StatusEffect> statusEffects = EnumSet.noneOf(StatusEffect.class);
     private Long templateCreatureId;
-    private final TurnItemType combatantType = TurnItemType.INDIVIDUAL;
+    private Long playerCharacterId;
+    private TurnItemType combatantType;
 
     public Combatant() {
 
     }
 
-    public Combatant(Long id, String name, String hitDice, Integer armorClass, Integer dexterity) {
+//    public Combatant(Long id, String name, String hitDice, Integer armorClass, Integer dexterity) {
+//        this.id = IdGeneratorService.generateId();
+//        this.name = name;
+//        this.hitDice = hitDice;
+//        this.maxHp = DndUtils.roll(hitDice);
+//        this.currentHp = this.maxHp;
+//        this.armorClass = armorClass;
+//        this.dexterity = dexterity;
+//        this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
+//        this.templateCreatureId = id;
+//    }
+
+    public Combatant(Long id, String name, Integer maxHp, Integer armorClass, Integer dexterity) {
         this.id = IdGeneratorService.generateId();
         this.name = name;
-        this.hitDice = hitDice;
-        this.maxHp = DndUtils.roll(hitDice);
-        this.currentHp = this.maxHp;
+        this.maxHp = maxHp;
+        this.currentHp = maxHp;
         this.armorClass = armorClass;
         this.dexterity = dexterity;
         this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
@@ -45,12 +56,23 @@ public class Combatant implements TurnQueueItem {
         this.maxHp = DndUtils.roll(hitDice);
     }
 
+    public Combatant(PlayerCharacter character) {
+        this.id = IdGeneratorService.generateId();
+        this.name = character.getName();
+        this.maxHp = character.getHp().get("max");
+        this.currentHp = character.getHp().get("current");
+        this.armorClass = character.getArmorClass();
+        this.dexterity = character.getAbilities().get("dexterity");
+        this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
+        this.playerCharacterId = character.getId();
+    }
+
     public void rerollInitiative() {
         this.initiative = (DndUtils.roll(20) + DndUtils.calculateModifier(dexterity));
     }
 
     @Override
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -60,7 +82,12 @@ public class Combatant implements TurnQueueItem {
     }
 
     @Override
-    public Integer getInitiative() {
+    public int armorClass() {
+        return 0;
+    }
+
+    @Override
+    public int getInitiative() {
         return initiative;
     }
 
@@ -129,7 +156,7 @@ public class Combatant implements TurnQueueItem {
         this.armorClass = armorClass;
     }
 
-    public Integer getDexterity() {
+    public int getDexterity() {
         return dexterity;
     }
 

@@ -1,0 +1,345 @@
+.entities-page__container {
+    color: var(--text-light);
+}
+
+.entities-main__container {
+    background-color: var(--bg-dark);
+    height: calc(100vh - 71px);
+    color: var(--text-body);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 2rem 0 2rem;
+    box-sizing: border-box;
+}
+
+.entities-main__cards {
+    border: 1px solid var(--text-light);
+    background-color: var(--bg-light);
+    border-radius: 1rem;
+    box-shadow: 0 0 15px #00000040;
+    max-width: 900px;
+    width: 100%;
+    padding: 2rem;
+    transition: box-shadow 0.3s ease;
+    color: var(--text-body)
+}
+
+.entities-main__header-title {
+    color: var(--text-light);
+}
+
+.entities-main__header-subtitle {
+    margin-bottom: 2rem;
+}
+
+.entities-main__cards:hover {
+    box-shadow: 0 0 25px var(--bg-light);
+}
+
+.entity-main__card,
+.entity-main__card--selected {
+    border: 1px solid var(--accent-dark);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 0 10px #00000040;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.entity-main__card:hover {
+    background-color: var(--bg-dark);
+    transform: translateY(-3px);
+    border-color: var(--highlight-soft);
+    box-shadow: 0 0 10px var(--border-glow);
+    transition: border-color 0.3s ease;
+}
+
+.entity-main__card--selected {
+    background-color: var(--bg-dark);
+    transform: translateY(-3px);
+    border-color: var(--text-light);
+    box-shadow: 0 0 10px var(--border-glow);
+    transition: border-color 0.3s ease;
+}
+
+.entity-main__card-title {
+    color: var(--text-light);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.entity-main__card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.entity-main__card-button {
+    background-color: var(--accent-light);
+    border: 1px solid var(--highlight-pale);
+    border-radius: 0.4rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.entity-main__card-button:hover {
+    background-color: var(--highlight-strong);
+    color: var(--text-light);
+    border-color: var(--highlight-strong);
+    transform: translateY(-1px);
+}
+
+.entity-main__card-button.delete {
+    background-color: var(--alert-red);
+    border-color: var(--alert-red-dark);
+}
+
+.entity-main__card-button.delete:hover {
+    background-color: var(--alert-red-dark);
+    box-shadow: 0 0 8px var(--alert-red);
+}
+
+.entity-main__card-button.edit {
+    background-color: var(--alert-gold);
+    border-color: var(--alert-gold-dark);
+}
+
+.entity-main__card-button.edit:hover {
+    background-color: var(--alert-gold-dark);
+    box-shadow: 0 0 8px var(--alert-gold);
+}
+
+.entities-top-bar__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 1rem 2rem;
+    box-shadow: 0 0 10px var(--border-glow);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.entities-top-bar__create-new-button {
+    background-color: var(--bg-light);
+    border: 1px solid var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--bg-dark);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.entities-top-bar__create-new-button:hover {
+    border: 1px solid var(--highlight-strong);
+    background-color: var(--bg-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px var(--border-glow);
+}
+
+.entities-top-bar__filter-contorls {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-body);
+}
+
+.entities-top-bar__filter-input {
+    background-color: var(--accent-dark);
+    color: var(--text-light);
+    border: 1px solid var(--highlight-muted);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.entities-top-bar__filter-input:focus {
+    border-color: var(--highlight-soft);
+    box-shadow: 0 0 6px var(--highlight-soft);
+}
+
+.entities-top-bar__filter-button {
+    background-color: var(--accent-light);
+    color: var(--text-light);
+    border: 1px solid var(--highlight-muted);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.entities-top-bar__filter-button:hover {
+    background-color: var(--highlight-strong);
+    border-color: var(--highlight-soft);
+    transform: translateY(-2px);
+}
+
+
+.creation-drawer__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(18, 17, 26, 0.9);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.creation-drawer__panel {
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-glow);
+    border-radius: 1rem;
+    box-shadow: 0 0 25px var(--border-glow);
+    padding: 2rem 2.5rem;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    color: var(--text-light);
+    animation: slideUp 0.3s ease forwards;
+}
+
+.creation-drawer__header {
+    display: flex;
+}
+
+.creation-drawer__close-button {
+    background-color: #00000000;
+    border: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    color: var(--text-light)
+}
+
+.creation-drawer__panel h2 {
+    color: var(--highlight-soft);
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.creation-drawer__panel p {
+    color: var(--text-body);
+    margin-bottom: 1.5rem;
+}
+
+.creation-drawer__options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.creation-drawer__option {
+    width: 100%;
+    background-color: var(--accent-dark);
+    color: var(--text-light);
+    border: 1px solid var(--highlight-muted);
+    border-radius: 0.6rem;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.creation-drawer__option:hover {
+    background-color: var(--highlight-strong);
+    border-color: var(--highlight-soft);
+    box-shadow: 0 0 12px var(--highlight-soft);
+    transform: translateY(-2px);
+}
+
+.entity-main__card-header-first-line {
+    display: flex;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-light);
+}
+
+.entity-main__card-header-first-line span {
+    padding-right: 1rem;
+}
+
+.entity-main__card-header-second-line {
+    display: grid;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.entity-main__card-controlls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.entity-main__card-controlls button {
+    background-color: #2e2e4a;
+    border: 1px solid #3a3a5a;
+    color: #ddd;
+    border-radius: 6px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Subtle hover feedback */
+.entity-main__card-controlls button:hover {
+    background-color: #3c3c5c;
+    transform: translateY(-1px);
+}
+
+/* Edit button — accent color (blue) */
+.entity-main__card-controlls button:first-child {
+    color: #93c5fd;
+    border-color: #2563eb55;
+}
+.entity-main__card-controlls button:first-child:hover {
+    background-color: #1e3a8a;
+    color: #bfdbfe;
+}
+
+/* Delete button — warning color (red) */
+.entity-main__card-controlls button:last-child {
+    color: #fca5a5;
+    border-color: #b91c1c55;
+}
+.entity-main__card-controlls button:last-child:hover {
+    background-color: #7f1d1d;
+    color: #fecaca;
+}
+
+/* Optional: make buttons appear only when hovered over the card */
+.entity-main__card-controlls {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.entity-main__card:hover .entity-main__card-controlls {
+    opacity: 1;
+}
+

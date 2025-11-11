@@ -18,4 +18,6 @@ public interface UserCombatantRepository extends JpaRepository<UserCombatant, Lo
     Optional<UserCombatant> getByIdAndOwner(Long id, User owner);
 
     Optional<UserCombatant> findByIdAndOwner(Long id, User owner);
+
+    Optional<UserCombatant> findById(Long id);
 }

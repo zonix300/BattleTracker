@@ -6,11 +6,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 @Entity
 @Table(name = "creatures")
@@ -123,8 +120,12 @@ public class TemplateCreature {
     private String description;
     private String legendaryDescription;
 
-    @Column(name = "made_by")
+    @Column(name = "document_title")
     private String documentTitle;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     public TemplateCreature() {
     }
@@ -494,5 +495,13 @@ public class TemplateCreature {
 
     public void setDocumentTitle(String documentTitle) {
         this.documentTitle = documentTitle;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

@@ -1,0 +1,14 @@
+.idea/
+.vscode/
+target/
+
+.env
+.env.local
+.env.production
+
+node_modules/
+target/
+build/
+dist/
+
+.docker/

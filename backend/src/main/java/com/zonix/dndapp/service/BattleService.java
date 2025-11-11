@@ -1,9 +1,10 @@
 package com.zonix.dndapp.service;
 
+import com.zonix.dndapp.dto.entity.AuthContext;
 import com.zonix.dndapp.dto.response.BattleResponse;
-import com.zonix.dndapp.entity.Battle;
-import com.zonix.dndapp.entity.User;
-import com.zonix.dndapp.entity.UserCombatant;
+import com.zonix.dndapp.entity.*;
+import com.zonix.dndapp.exception.BattleNotFoundException;
+import com.zonix.dndapp.exception.UserNotFoundException;
 import com.zonix.dndapp.repository.BattleRepository;
 import com.zonix.dndapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,44 +16,52 @@ import java.util.Optional;
 @Service
 public class BattleService {
 
-    private BattleRepository battleRepository;
-    private UserRepository userRepository;
+    private final BattleRepository battleRepository;
+    private final UserService userService;
+    private final LobbyService lobbyService;
 
-    public BattleService(BattleRepository battleRepository, UserRepository userRepository) {
+    public BattleService(BattleRepository battleRepository, UserService userService, LobbyService lobbyService) {
         this.battleRepository = battleRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.lobbyService = lobbyService;
     }
 
-//    public Long nextTurn(String email) {
-//        Optional<User> userOptional = userRepository.findByEmail(email);
-//        if (userOptional.isEmpty()) {
-//            return null;
-//        }
-//        User user = userOptional.get();
-//
-//        Optional<Battle> battleOptional = battleRepository.findByOwner(user); // todo
-//
-//        if (battleOptional.isEmpty()) {
-//            return null;
-//        }
-//
-//        Battle battle = battleOptional.get();
-//
-//        battle.setCurrentIndex((battle.getCurrentIndex()+1) % battle.getUserCombatants().size());
-//
-//        return battle.getUserCombatants().get(battle.getCurrentIndex()).getId();
-//    }
+    public BattleResponse getBattleResponse(Optional<Long> battleId, AuthContext authContext) {
 
-    public BattleResponse getBattle(Optional<Long> battleId, String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        User owner = userService.findUser(authContext);
 
-        if (userOptional.isEmpty()) {
-            return null;
+        Battle battle;
+
+        if (battleId.isPresent()) {
+            battle = battleRepository.findById(battleId.get())
+                    .orElseThrow(() -> new BattleNotFoundException("Battle was not found"));
+        } else {
+            battle = battleRepository.findFirstByOwnerOrderByCreatedAtDesc(owner)
+                    .orElseGet(() -> createBattle(owner));
         }
 
-        Battle battle = validateBattle(battleId, userOptional.get());
-        validateCurrent(battle);
+        sortUserCombatants(battle);
+
         return new BattleResponse(battle);
+    }
+
+    public Lobby assignBattleToLobby(Optional<Long> battleId, Lobby lobby) {
+
+        Battle battle;
+
+        if (battleId.isPresent()) {
+            battle = battleRepository.findById(battleId.get())
+                    .orElseThrow(() -> new BattleNotFoundException("Battle was not found or user doesn't have access"));
+        } else {
+            battle = battleRepository.findFirstByOwnerOrderByCreatedAtDesc(lobby.getOwner())
+                    .orElseGet(() -> createBattle(lobby.getOwner()));
+        }
+
+        lobby.setBattle(battle);
+
+        lobbyService.save(lobby);
+
+        return lobby;
     }
 
     public void addUserCombatant(UserCombatant userCombatant, Battle battle) {
@@ -63,7 +72,7 @@ public class BattleService {
 
     public Battle validateBattle(Optional<Long> battleIdOptional, User owner) {
         if (battleIdOptional.isPresent()) {
-            return battleRepository.findByIdAndOwner(battleIdOptional.get(), owner)
+            return battleRepository. findById(battleIdOptional.get())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid battle ID for this user"));
         }
 
@@ -78,6 +87,14 @@ public class BattleService {
 
     }
 
+    public Battle createBattle(User owner) {
+        Battle newBattle = new Battle();
+        newBattle.setOwner(owner);
+        newBattle.setName("Untitled Battle");
+        newBattle.setCreatedAt(LocalDateTime.now());
+        return battleRepository.save(newBattle);
+    }
+
     public void validateCurrent(Battle battle) {
         if (battle.getCurrent() == null || !battle.getUserCombatants().contains(battle.getCurrent())) {
             sortUserCombatants(battle);
@@ -88,18 +105,14 @@ public class BattleService {
         }
     }
 
-    public BattleResponse nextTurn(String email) {
-        Optional<User> ownerOptional = userRepository.findByEmail(email);
+    public BattleResponse nextTurn(AuthContext authContext) {
+        User owner = userService.findUser(authContext);
 
-        if (ownerOptional.isEmpty()) {
-            return null;
-        }
-
-        Battle battle = validateBattle(Optional.empty(), ownerOptional.get());
+        Battle battle = validateBattle(Optional.empty(), owner);
         sortUserCombatants(battle);
 
         int current = 0;
-        for(UserCombatant uc : battle.getUserCombatants()) {
+        for (UserCombatant uc : battle.getUserCombatants()) {
             current++;
             if (uc == battle.getCurrent()) {
                 break;

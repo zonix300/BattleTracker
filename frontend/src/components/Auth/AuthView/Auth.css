@@ -1,0 +1,102 @@
+.auth_form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Inner div */
+.auth_form__container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--bg-light);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 400px;
+  border: 10px solid transparent;
+  transition: border 1s ease;
+}
+
+.auth_form__header {
+    text-align: center;
+    color: var(--text-light);
+    margin: 0 0 1rem 0;
+}
+
+/* Input fields */
+.auth_form__input {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--highlight-muted);
+  color: var(--text-body);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.auth_form__input::placeholder {
+  color: var(--highlight-muted);
+}
+
+.auth_form__input:focus {
+  outline: none;
+  border-color: var(--highlight-soft);
+  background-color: var(--accent-dark);
+  color: var(--text-light);
+  box-shadow: 0 0 10px var(--border-glow);
+}
+
+/* Button */
+.auth_form__submit_button {
+  background-color: var(--highlight-soft);
+  border: none;
+  color: var(--bg-dark);
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.auth_form__submit_button:hover {
+  background-color: var(--highlight-strong);
+  box-shadow: 0 0 20px var(--border-glow);
+  transform: translateY(-1px);
+}
+
+.auth_form__submit_button:active {
+  transform: translateY(1px);
+}
+
+.auth_form__redirect_container {
+  color: var(--text-body);
+  text-align: center;
+}
+
+.auth_form__redirect:hover {
+  color: var(--text-light);
+    cursor: pointer;
+}
+
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth_form > div {
+    padding: 1.5rem;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.auth_form.invalid > .auth_form__container {
+    border: 3px solid var(--alert-red);
+    transition: border 0.3s ease;
+    animation: shake 0.3s ease;
+}

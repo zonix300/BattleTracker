@@ -1,8 +1,10 @@
 package com.zonix.dndapp.entity;
 
 public interface TurnQueueItem {
-    public Long getId();
-    public String getName();
-    public Integer getInitiative();
-    public TurnItemType getType();
+    long getId();
+    String getName();
+    int armorClass();
+    int getInitiative();
+    int getDexterity();
+    TurnItemType getType();
 }

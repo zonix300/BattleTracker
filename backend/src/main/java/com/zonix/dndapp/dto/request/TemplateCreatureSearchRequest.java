@@ -6,7 +6,7 @@ public record TemplateCreatureSearchRequest(
         @NotBlank(message = "Name cannot be blank")
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters long")
         @Pattern(regexp = "^[a-zA-Z0-9\\s\\-']+$", message = "Name contains invalid characters")
-        String name,
+        String query,
 
         @NotBlank(message = "Sort Direction cannot be blank")
         String sortDirection,
@@ -25,7 +25,7 @@ public record TemplateCreatureSearchRequest(
         @Override
         public String toString() {
                 return "TemplateCreatureSearchRequest{" +
-                        "name='" + name + '\'' +
+                        "name='" + query + '\'' +
                         ", sortDirection='" + sortDirection + '\'' +
                         ", page=" + page +
                         ", size=" + size +

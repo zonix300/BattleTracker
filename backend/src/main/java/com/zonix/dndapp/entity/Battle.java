@@ -22,13 +22,18 @@ public class Battle {
 
     private int round = 1;
 
-    @OneToMany(mappedBy = "battle", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "battle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) //todo change eager to false
     private List<UserCombatant> userCombatants = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     private LocalDateTime createdAt;
+
 
     public Long getId() {
         return id;
@@ -76,6 +81,14 @@ public class Battle {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -1,0 +1,79 @@
+.homepage {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  font-family: "Inter", sans-serif;
+  padding: 2rem;
+}
+
+/* Title and subtitle */
+.homepage__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.homepage__subtitle {
+  color: var(--text-body);
+  margin-bottom: 2.5rem;
+  text-align: center;
+  max-width: 600px;
+}
+
+/* Grid for navigation buttons */
+.homepage__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Each navigation card */
+.homepage__card {
+  background-color: var(--bg-light);
+  border: 1px solid var(--accent-dark);
+  border-radius: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.homepage__card:hover {
+  background-color: var(--accent-dark);
+  border-color: var(--highlight-strong);
+  box-shadow: 0 0 20px var(--border-glow);
+  transform: translateY(-4px);
+}
+
+.homepage__card:active {
+  transform: translateY(0);
+}
+
+.homepage__card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.homepage__card-desc {
+  font-size: 0.9rem;
+  color: var(--text-body);
+  margin-top: 0.5rem;
+}
+
+/* Responsive layout */
+@media (max-width: 700px) {
+  .homepage__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

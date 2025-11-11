@@ -1,0 +1,107 @@
+import { useState, useCallback } from "react";
+import { apiClient } from "../services/api";
+import "../components/Auth/AuthManager"
+import { AuthManager } from "../components/Auth/AuthManager";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../components/Auth/AuthContext";
+
+interface ApiCallOptions {
+    showLoadingFor?: string;
+    onSuccess?: (data: any) => void;
+    onError?: (error: any) => void;
+    validateInput?: (params: any) => boolean;
+    skipAuth?: boolean;
+}
+
+export const useSecureApiCall = () => {
+    const [loadingStates, setLoadingStates] = useState<Set<string>>(new Set());
+    const auth = useAuth();
+
+    const makeApiCall = useCallback(async (
+        method: "get" | "post" | "patch" | "put" | "delete",
+        endpoint: string,
+        data?: any,
+        options: ApiCallOptions = {}
+    ) => {
+        const {
+            showLoadingFor,
+            onSuccess,
+            onError,
+            validateInput,
+            skipAuth = false
+        } = options;
+
+        if (showLoadingFor && loadingStates.has(showLoadingFor)) {
+            return;
+        }
+
+        try {
+            if (validateInput && !validateInput(data)) {
+                throw new Error("Invalid input data");
+            }
+
+            if (showLoadingFor) {
+                setLoadingStates(prev => new Set(prev).add(showLoadingFor));
+            }
+        
+            const headers: Record<string, string> = {};
+
+            if (!skipAuth) {
+                if (auth === null) {
+                    throw new Error("Not able to create Authentication Context");
+                }
+
+                if(!auth.checkAuthWithModal()) {
+                    return;
+                }
+
+                const role = auth.getRole();
+                const token = auth.getToken();
+
+                if (!role || !token) {
+                    return;
+                }
+
+                if (role === "USER") {
+                    headers["Authorization"] = `Bearer ${token}`;
+                }
+            }
+
+            let response;
+            if (method === "get" || method === "delete") {
+                response = await apiClient[method](endpoint, {headers});
+            } else {
+                response = await apiClient[method](endpoint, data, {headers});
+            }
+
+            if (onSuccess) {
+                onSuccess(response.data)
+            }
+
+            return response.data;
+
+        } catch (error: any) {
+            console.error(`API call failed: ${method.toUpperCase()} ${endpoint}`, error);
+
+            if (onError) {
+                onError(error);
+            } else {
+                throw error;
+            }
+        } finally {
+
+            if (showLoadingFor) {
+                setLoadingStates(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(showLoadingFor);
+                    return newSet;
+                });
+            }
+        }
+    }, [loadingStates]);
+
+    return {
+        makeApiCall,
+        isLoading: (identifier: string) => loadingStates.has(identifier)
+    };
+};

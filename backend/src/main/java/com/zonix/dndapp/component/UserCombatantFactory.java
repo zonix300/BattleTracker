@@ -1,5 +1,6 @@
 package com.zonix.dndapp.component;
 
+import com.zonix.dndapp.entity.playerCharacter.PlayerCharacter;
 import com.zonix.dndapp.entity.TemplateCreature;
 import com.zonix.dndapp.entity.User;
 import com.zonix.dndapp.entity.UserCombatant;
@@ -27,6 +28,15 @@ public class UserCombatantFactory {
         return uc;
     }
 
+    public static UserCombatant fromPlayerCharacterWithHitPoints(PlayerCharacter character, User user) {
+        UserCombatant uc = fromPlayerCharacter(character, user);
+
+        uc.setMaxHp(character.getHp().get("max"));
+        uc.setCurrentHp(character.getHp().get("current"));
+
+        return uc;
+    }
+
     private static UserCombatant fromTemplate(TemplateCreature creature, User user) {
         UserCombatant uc = new UserCombatant();
         uc.setOwner(user);
@@ -37,6 +47,19 @@ public class UserCombatantFactory {
         uc.setDexterity(creature.getDexterity());
         uc.setInitiative(DndUtils.roll(20) + DndUtils.calculateModifier(uc.getDexterity()));
         uc.setTemplateCreature(creature);
+
+        return uc;
+    }
+
+    private static UserCombatant fromPlayerCharacter(PlayerCharacter character, User user) {
+        UserCombatant uc = new UserCombatant();
+        uc.setOwner(user);
+
+        uc.setName(character.getName());
+        uc.setArmorClass(character.getArmorClass());
+        uc.setDexterity(character.getAbilities().get("dexterity"));
+        uc.setInitiative(DndUtils.roll(20) + DndUtils.calculateModifier(uc.getDexterity()));
+        uc.setPlayerCharacter(character);
 
         return uc;
     }

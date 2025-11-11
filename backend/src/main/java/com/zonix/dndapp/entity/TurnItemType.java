@@ -1,6 +1,6 @@
 package com.zonix.dndapp.entity;
 
 public enum TurnItemType {
-    INDIVIDUAL,
-    GROUP
+    PLAYER_CHARACTER,
+    TEMPLATE_CREATURE
 }

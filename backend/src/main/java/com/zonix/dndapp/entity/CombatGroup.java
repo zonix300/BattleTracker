@@ -9,7 +9,7 @@ public class CombatGroup implements TurnQueueItem {
     private String groupName;
     private Integer groupInitiative;
     private List<Combatant> members;
-    private final TurnItemType groupType = TurnItemType.GROUP;
+    private TurnItemType groupType;
 
     public CombatGroup(String groupName, List<Combatant> members) {
         this.groupId = IdGeneratorService.generateId();
@@ -47,7 +47,7 @@ public class CombatGroup implements TurnQueueItem {
 
 
     @Override
-    public Long getId() {
+    public long getId() {
         return groupId;
     }
 
@@ -57,8 +57,18 @@ public class CombatGroup implements TurnQueueItem {
     }
 
     @Override
-    public Integer getInitiative() {
+    public int armorClass() {
+        return 0;
+    }
+
+    @Override
+    public int getInitiative() {
         return groupInitiative;
+    }
+
+    @Override
+    public int getDexterity() {
+        return 0;
     }
 
     @Override

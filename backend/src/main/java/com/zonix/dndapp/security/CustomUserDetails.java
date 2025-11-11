@@ -1,5 +1,6 @@
 package com.zonix.dndapp.security;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zonix.dndapp.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,6 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
+
+    @JsonProperty(value = "user")
     private final User user;
 
     public CustomUserDetails(User user) {
@@ -27,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
     @Override

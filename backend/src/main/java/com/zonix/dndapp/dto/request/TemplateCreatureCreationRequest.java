@@ -45,8 +45,6 @@ public record TemplateCreatureCreationRequest(
 
          String challengeRating,
          String description,
-         String legendaryDescription,
-         String documentTitle
-
+         String legendaryDescription
 ) {
 }

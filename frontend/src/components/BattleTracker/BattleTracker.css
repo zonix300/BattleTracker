@@ -1,0 +1,18 @@
+.battle-tracker {
+    display: grid;
+    grid-template-columns: 1fr 20vw;
+    height: 100vh;
+    color: var(--text-light);
+    background-color: var(--bg-dark);
+}
+
+.combatants-container {
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.creature-sheet-container {
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: var(--bg-light);
+}
