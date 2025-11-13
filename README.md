@@ -16,7 +16,6 @@ Java 17 • Spring Boot • Spring Web • Spring Security • React • TypeScr
 - Create and manage combat entities (players, monsters, NPCs)
 - Automatic initiative ordering
 - Apply damage, healing, and effects
-- Group combatants for area effects
 - Authentication with Spring Security
 - Persistent data in PostgreSQL
 - Responsive UI (React + TypeScript)
