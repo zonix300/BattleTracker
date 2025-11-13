@@ -28,7 +28,7 @@ Java 17 • Spring Boot • Spring Web • Spring Security • React • TypeScr
 - **Frontend:** React + TypeScript  
 - **Database:** PostgreSQL  
 - **Security:** Spring Security (JWT)  
-- **Hosting:** Render (Backend) + GitHub Pages (Frontend)
+- **Hosting:** Render
 
 ---
 
