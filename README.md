@@ -8,7 +8,7 @@ Java 17 • Spring Boot • Spring Web • Spring Security • React • TypeScr
 ---
 
 ## 🌐 Live Demo
-🔗 [Try it here!](https://dnd-battle-tracker.onrender.com)
+🔗 [Try it here!](https://battletracker-l5u7.onrender.com/)
 
 ---
 
