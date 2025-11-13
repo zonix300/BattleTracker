@@ -1,7 +1,5 @@
 # 🛡️ DnD Battle Tracker
 
-A web app that helps Dungeon Masters manage turn order, HP, and combat states in Dungeons & Dragons 5e.
-
 **Tech Stack:**  
 Java 17 • Spring Boot • Spring Web • Spring Security • React • TypeScript • REST API • PostgreSQL
 
